@@ -3,6 +3,8 @@ import TeamSwitcher from "@/components/dashboard/team-switcher";
 import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { UserNav } from "@/components/dashboard/user-nav";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -17,8 +19,8 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <section className="mt-24 px-8">
-        <div className="ml-24">
+      <section className="mt-24 px-32">
+        <div className="">
           <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
             Build beatiful forms
           </h1>
@@ -26,10 +28,17 @@ export default function Home() {
             And own your data.
           </h1>
         </div>
-        <div className="mt-8 ml-24">
+        <div className="mt-8">
           <div className="max-w-[750px] text-lg text-muted-foreground sm:text-xl">
             Publish your form in less than 5 minutes.
           </div>
+        </div>
+        <div className="flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
+          <Link href={"/forms"}>
+            <Button>Create form</Button>
+          </Link>
+
+          <Button variant="secondary">GitHub</Button>
         </div>
       </section>
     </div>
