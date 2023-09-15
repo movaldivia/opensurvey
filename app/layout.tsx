@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className="">
         <NextAuthProvider>{children}</NextAuthProvider>
       </body>
     </html>
