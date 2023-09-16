@@ -20,3 +20,20 @@ export const createForm = async () => {
 
   return response;
 };
+
+export const getFormsFromUser = async () => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const response = await prisma.form.findMany({
+    where: {
+      userId: session.user.id,
+    },
+  });
+
+  return response;
+};

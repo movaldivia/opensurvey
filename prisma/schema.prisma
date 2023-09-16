@@ -10,18 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Form {
-  id String @id @default(uuid())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  title String
-}
 
-model Question {
-  id String @id @default(uuid())
-  text String
-  placeholder String
-}
 
 model User {
   id            String    @id @default(uuid())
@@ -37,6 +26,21 @@ model User {
   forms   Form[]
 
   @@map("users")
+}
+
+model Form {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  title String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Question {
+  id String @id @default(uuid())
+  text String
+  placeholder String
 }
 
 model Account {

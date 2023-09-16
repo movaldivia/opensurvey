@@ -1,6 +1,16 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Form from "@/app/forms/form";
+import { getFormsFromUser } from "@/lib/actions";
+import { DataTable } from "@/components/formsTable/data-table";
+import { columns } from "@/components/formsTable/columns";
+import path from "path";
+import { taskSchema } from "@/components/formsTable/data/schema";
+import { promises as fs } from "fs";
+import { z } from "zod";
+
+// Add
+export const dynamic = "force-dynamic";
 
 type Question = {
   type: "text";
@@ -23,12 +33,32 @@ const renderQuestion = (props: Question) => {
   return null;
 };
 
-export default function Forms() {
+async function getTasks() {
+  const data = await fs.readFile(
+    path.join(process.cwd(), "components/formsTable/data/tasks.json")
+  );
+
+  const tasks = JSON.parse(data.toString());
+
+  return z.array(taskSchema).parse(tasks);
+}
+
+export default async function Forms() {
+  const tasks = await getTasks();
+  const formsFromUser = await getFormsFromUser();
+
+  if ("error" in formsFromUser) {
+    return null;
+  }
+
   const questions = [generateQuestion()];
   return (
     <div className="my-24 mx-24">
       <div className="my-24">{<Form></Form>}</div>
-
+      {formsFromUser.map((form) => {
+        return <div key={form.id}>{form.title}</div>;
+      })}
+      {<DataTable data={formsFromUser} columns={columns}></DataTable>}
       {questions.map((element) => {
         return renderQuestion(element);
       })}
