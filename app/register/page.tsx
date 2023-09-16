@@ -1,7 +1,13 @@
 import { RegisterForm } from "./form";
 import Header from "@/components/header.component";
+import { getSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const session = await getSession();
+  if (session?.user) {
+    redirect("/forms");
+  }
   return (
     <>
       <Header />

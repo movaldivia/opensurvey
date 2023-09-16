@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Form from "@/app/forms/form";
 
 type Question = {
   type: "text";
@@ -26,9 +27,8 @@ export default function Forms() {
   const questions = [generateQuestion()];
   return (
     <div className="my-24 mx-24">
-      <div>
-        <Button>Add Question</Button>
-      </div>
+      <div className="my-24">{<Form></Form>}</div>
+
       {questions.map((element) => {
         return renderQuestion(element);
       })}

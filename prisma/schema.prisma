@@ -10,6 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Form {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  title String
+}
+
+model Question {
+  id String @id @default(uuid())
+  text String
+  placeholder String
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String
@@ -21,6 +34,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  forms   Form[]
 
   @@map("users")
 }

@@ -34,7 +34,7 @@ export default function Home() {
           </div>
         </div>
         <div className="flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
-          <Link href={"/forms"}>
+          <Link href={"/register"}>
             <Button>Create form</Button>
           </Link>
 
