@@ -49,13 +49,11 @@ export default async function Forms() {
   const tasks = await getTasks();
   const formsFromUser = await getFormsFromUser();
 
-  console.log({ formDate: formsFromUser });
-
   if ("error" in formsFromUser) {
     return null;
   }
 
-  const formsFromUserformatted = formsFromUser.map((element) => {
+  const formsFromUserFormatted = formsFromUser.map((element) => {
     return {
       ...element,
       createdAt: format(element.createdAt, "dd/MM/yyyy"),
@@ -70,7 +68,7 @@ export default async function Forms() {
       {formsFromUser.map((form) => {
         return <div key={form.id}>{form.title}</div>;
       })}
-      {<DataTable data={formsFromUserformatted} columns={columns}></DataTable>}
+      {<DataTable data={formsFromUserFormatted} columns={columns}></DataTable>}
       {/* {questions.map((element) => {
         return renderQuestion(element);
       })}

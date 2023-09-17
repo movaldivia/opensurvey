@@ -21,6 +21,42 @@ export const createForm = async () => {
   return response;
 };
 
+export const createQuestion = async (formId: string) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const formFromUser = await prisma.form.findFirst({
+    where: {
+      id: formId,
+    },
+  });
+
+  if (!formFromUser) {
+    return {
+      error: "Form does not exist",
+    };
+  }
+
+  if (formFromUser.userId !== session.user.id) {
+    return {
+      error: "Form is not from user",
+    };
+  }
+
+  const response = await prisma.question.create({
+    data: {
+      userId: session.user.id,
+      formId: formFromUser.id,
+    },
+  });
+
+  return response;
+};
+
 export const getFormsFromUser = async () => {
   const session = await getSession();
   if (!session?.user.id) {

@@ -11,15 +11,15 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 
 export const columns: ColumnDef<Form>[] = [
-  // {
-  //   accessorKey: "id",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Id" />
-  //   ),
-  //   cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
+  {
+    accessorKey: "id",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Id" />
+    ),
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "title",
     header: ({ column }) => (

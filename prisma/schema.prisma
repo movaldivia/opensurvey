@@ -24,6 +24,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   forms   Form[]
+  questions Question[]
 
   @@map("users")
 }
@@ -35,12 +36,17 @@ model Form {
   title String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  questions Question[]
 }
 
 model Question {
+  formId String
+  form Form @relation(fields: [formId], references: [id])
   id String @id @default(uuid())
-  text String
-  placeholder String
+  text String @default("")
+  placeholder String @default("")
+  userId String
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Account {
