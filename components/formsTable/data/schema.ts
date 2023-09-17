@@ -15,6 +15,8 @@ export type Task = z.infer<typeof taskSchema>;
 export const formSchema = z.object({
   id: z.string(),
   title: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
-export type Form = z.infer<typeof taskSchema>;
+export type Form = z.infer<typeof formSchema>;

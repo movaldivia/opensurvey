@@ -9,6 +9,8 @@ import { taskSchema } from "@/components/formsTable/data/schema";
 import { promises as fs } from "fs";
 import { z } from "zod";
 
+import { format } from "date-fns";
+
 // Add
 export const dynamic = "force-dynamic";
 
@@ -47,19 +49,29 @@ export default async function Forms() {
   const tasks = await getTasks();
   const formsFromUser = await getFormsFromUser();
 
+  console.log({ formDate: formsFromUser });
+
   if ("error" in formsFromUser) {
     return null;
   }
 
+  const formsFromUserformatted = formsFromUser.map((element) => {
+    return {
+      ...element,
+      createdAt: format(element.createdAt, "dd/MM/yyyy"),
+      updatedAt: format(element.updatedAt, "dd/MM/yyyy"),
+    };
+  });
+
   const questions = [generateQuestion()];
   return (
     <div className="my-24 mx-24">
-      <div className="my-24">{<Form></Form>}</div>
+      <div className="mt-12 mb-8">{<Form></Form>}</div>
       {formsFromUser.map((form) => {
         return <div key={form.id}>{form.title}</div>;
       })}
-      {<DataTable data={formsFromUser} columns={columns}></DataTable>}
-      {questions.map((element) => {
+      {<DataTable data={formsFromUserformatted} columns={columns}></DataTable>}
+      {/* {questions.map((element) => {
         return renderQuestion(element);
       })}
       <div className="my-12">
@@ -77,7 +89,7 @@ export default async function Forms() {
         />
       </div>
 
-      <input placeholder="Type the question"></input>
+      <input placeholder="Type the question"></input> */}
     </div>
   );
 }
