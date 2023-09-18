@@ -20,27 +20,45 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 
-const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+const formSchema = z.object({
+  title: z.string().min(1, {
+    message: "Title must be at least 1 characters.",
   }),
   questions: z
     .array(
       z.object({
-        label: z.string().min(1, { message: "Can't left empty question" }),
-        input: z.string(),
+        text: z.string().min(1, { message: "Can't left empty question" }),
+        placeholder: z.string(),
       })
     )
     .optional(),
 });
 
-export default function QuestionForm({ formId }: { formId: string }) {
+export default function QuestionForm({
+  formId,
+  questions,
+  title,
+}: {
+  formId: string;
+  questions: any;
+  title: string;
+}) {
   console.log({ formId });
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  console.log({ questions });
+  type FormSchema = z.infer<typeof formSchema>;
+
+  // This can come from your database or API.
+  const defaultValues: Partial<FormSchema> = {
+    questions,
+    title,
+  };
+
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues,
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit(data: FormSchema) {
     toast({
       title: "You submitted the following values:",
       description: (
@@ -65,7 +83,7 @@ export default function QuestionForm({ formId }: { formId: string }) {
         >
           <FormField
             control={form.control}
-            name="username"
+            name="title"
             render={({ field }) => (
               <FormItem className="!space-y-0">
                 <FormControl>
@@ -87,8 +105,8 @@ export default function QuestionForm({ formId }: { formId: string }) {
             onClick={async () => {
               await createQuestion(formId);
               append({
-                label: "",
-                input: "",
+                text: "",
+                placeholder: "",
               });
             }}
           >
@@ -98,8 +116,8 @@ export default function QuestionForm({ formId }: { formId: string }) {
             <div key={field.id}>
               <FormField
                 control={form.control}
-                key={field.id}
-                name={`questions.${index}.label`}
+                key={field.id + "0"}
+                name={`questions.${index}.text`}
                 render={({ field }) => (
                   <FormItem className="!space-y-0">
                     <FormControl>
@@ -115,8 +133,8 @@ export default function QuestionForm({ formId }: { formId: string }) {
               />
               <FormField
                 control={form.control}
-                key={field.id}
-                name={`questions.${index}.input`}
+                key={field.id + "1"}
+                name={`questions.${index}.placeholder`}
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
