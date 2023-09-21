@@ -119,7 +119,7 @@ export default function InputForm() {
                     <FormControl>
                       <Input
                         placeholder="Type placeholder text"
-                        className="leading-7 [&:not(:first-child)]:mt-6 text-muted-foreground "
+                        className="leading-7 [&:not(:first-child)]:mt-0 text-muted-foreground "
                         {...field}
                       />
                     </FormControl>

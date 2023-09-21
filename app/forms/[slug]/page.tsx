@@ -1,5 +1,9 @@
 import QuestionForm from "./form";
-import { getQuestionsFromUser, getFormFromUser } from "@/lib/actions";
+import {
+  getQuestionsFromUser,
+  getFormFromUser,
+  createQuestion,
+} from "@/lib/actions";
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const questions = await getQuestionsFromUser(params.slug);
@@ -12,6 +16,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           title={form?.title}
           formId={params.slug}
           questions={questions}
+          createQuestion={createQuestion}
         />
       }
     </>
