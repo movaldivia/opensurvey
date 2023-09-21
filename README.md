@@ -3,6 +3,7 @@
 ## Update db
 
 npx prisma db push
+npx prisma generate
 
 ## db migrate
 

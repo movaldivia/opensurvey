@@ -6,8 +6,9 @@ import * as z from "zod";
 import { cn } from "@/lib/utils";
 import { useDebouncedCallback } from "use-debounce";
 import { revalidatePath } from "next/cache";
+import { Plus, Trash2 } from "lucide-react";
 
-import { updateQuestionFromUser } from "@/lib/actions";
+import { updateQuestionFromUser, updateFormFromUser } from "@/lib/actions";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -47,8 +48,6 @@ export default function QuestionForm({
   title: string;
   createQuestion: any;
 }) {
-  console.log({ formId });
-  console.log({ questions });
   type FormSchema = z.infer<typeof formSchema>;
 
   // This can come from your database or API.
@@ -62,33 +61,28 @@ export default function QuestionForm({
     defaultValues,
   });
 
-  function onSubmit(data: FormSchema) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
-  }
-
   const firstName = useWatch({
     control: form.control,
     // name: "firstName", // without supply name will watch the entire form, or ['firstName', 'lastName'] to watch both
     // defaultValue: "default", // default value before the render
   });
 
-  console.log({ firstName });
-
   const debounced = useDebouncedCallback(
     // function
     (questionId, placeholder, text) => {
       updateQuestionFromUser(formId, questionId, placeholder, text);
-      console.log(questionId, placeholder, text);
     },
     // delay in ms
-    1000
+    500
+  );
+
+  const formTitleDebounced = useDebouncedCallback(
+    // function
+    (formId: string, title: string) => {
+      updateFormFromUser(formId, title);
+    },
+    // delay in ms
+    500
   );
 
   const { fields, append } = useFieldArray({
@@ -100,7 +94,9 @@ export default function QuestionForm({
     <div className="mx-48 my-24">
       <Input
         placeholder="Type form title"
+        defaultValue={title}
         className="border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0"
+        onChange={(e) => formTitleDebounced(formId, e.target.value)}
       />
       <div className="mt-4">
         <Button
@@ -109,7 +105,7 @@ export default function QuestionForm({
           size="sm"
           className="mt-2"
           onClick={async () => {
-            await createQuestion(formId);
+            await createQuestion(formId, questions.length);
           }}
         >
           Add Question
@@ -119,21 +115,36 @@ export default function QuestionForm({
       <div className="mt-12">
         {questions.map((element) => {
           return (
-            <div key={element.id} className="mb-5">
+            <div key={element.id} className="mb-5 group relative">
               <Input
                 defaultValue={element.text}
                 key={element.id + "2"}
                 placeholder="Type a question"
-                className="border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0"
+                className="w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0"
                 onChange={(e) => debounced(element.id, null, e.target.value)}
               />
               <Input
                 defaultValue={element.placeholder}
                 placeholder="Type a placeholder for the response"
                 key={element.id + "1"}
-                className="leading-7 [&:not(:first-child)]:mt-0 text-muted-foreground "
+                className="w-1/2 leading-7 [&:not(:first-child)]:mt-0 text-muted-foreground "
                 onChange={(e) => debounced(element.id, e.target.value, null)}
               />
+              <div className=" absolute top-2 left-0 transform -translate-x-full  hidden group-hover:inline-flex">
+                <div className="mr-6">
+                  <div className="px-2 hover:cursor-pointer">
+                    <Plus
+                      className=" text-gray-700"
+                      onClick={async () => {
+                        await createQuestion(formId, element.order + 1);
+                      }}
+                    />
+                  </div>
+                  <div className="px-2 mt-1 hover:cursor-pointer">
+                    <Trash2 className=" mt-1 text-gray-700 " />
+                  </div>
+                </div>
+              </div>
             </div>
           );
         })}

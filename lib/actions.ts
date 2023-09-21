@@ -22,6 +22,27 @@ export const createForm = async () => {
   return response;
 };
 
+export const updateFormFromUser = async (formId: string, title: string) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const response = await prisma.form.update({
+    where: {
+      id: formId,
+      userId: session.user.id,
+    },
+    data: {
+      title,
+    },
+  });
+  revalidatePath(`forms/${formId}`);
+  return response;
+};
+
 export const updateQuestionFromUser = async (
   formId: string,
   questionId: string,
@@ -109,7 +130,7 @@ export const getQuestionsFromUser = async (formId: string) => {
       userId: session.user.id,
     },
     orderBy: {
-      createdAt: "desc",
+      order: "asc",
     },
   });
 
@@ -118,7 +139,7 @@ export const getQuestionsFromUser = async (formId: string) => {
   return response;
 };
 
-export const createQuestion = async (formId: string) => {
+export const createQuestion = async (formId: string, questionOrder: number) => {
   const session = await getSession();
   if (!session?.user.id) {
     return {
@@ -144,16 +165,41 @@ export const createQuestion = async (formId: string) => {
     };
   }
 
-  const response = await prisma.question.create({
-    data: {
-      userId: session.user.id,
-      formId: formFromUser.id,
+  const questions = await prisma.question.findMany({
+    where: {
+      formId,
+      order: {
+        gte: questionOrder,
+      },
+    },
+    orderBy: {
+      order: "asc",
     },
   });
 
+  const updateOperations = questions.map((question) => {
+    const newOrder = question.order + 1;
+    return prisma.question.update({
+      where: { id: question.id, formId },
+      data: { order: newOrder },
+    });
+  });
+
+  const createFunction = prisma.question.create({
+    data: {
+      userId: session.user.id,
+      formId,
+      order: questionOrder,
+    },
+  });
+
+  updateOperations.push(createFunction);
+
+  await prisma.$transaction(updateOperations);
+
   revalidatePath(`forms/${formId}`);
 
-  return response;
+  return;
 };
 
 export const getFormsFromUser = async () => {
