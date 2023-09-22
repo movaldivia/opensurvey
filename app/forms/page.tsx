@@ -65,9 +65,6 @@ export default async function Forms() {
   return (
     <div className="my-24 mx-24">
       <div className="mt-12 mb-8">{<Form></Form>}</div>
-      {formsFromUser.map((form) => {
-        return <div key={form.id}>{form.title}</div>;
-      })}
       {<DataTable data={formsFromUserFormatted} columns={columns}></DataTable>}
       {/* {questions.map((element) => {
         return renderQuestion(element);

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export const createForm = async () => {
   const session = await getSession();
@@ -37,6 +38,34 @@ export const updateFormFromUser = async (formId: string, title: string) => {
     },
     data: {
       title,
+    },
+  });
+  revalidatePath(`forms/${formId}`);
+  return response;
+};
+
+export const tooglePublishFormFromUser = async (formId: string) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const form = await prisma.form.findFirstOrThrow({
+    where: {
+      id: formId,
+      userId: session.user.id,
+    },
+  });
+
+  const response = await prisma.form.update({
+    where: {
+      id: formId,
+      userId: session.user.id,
+    },
+    data: {
+      published: !form.published,
     },
   });
   revalidatePath(`forms/${formId}`);
@@ -311,6 +340,24 @@ export const getFormFromUser = async (formId: string) => {
       id: formId,
     },
   });
+
+  return response;
+};
+
+export const getForm = async (formId: string) => {
+  const response = await prisma.form.findFirst({
+    where: {
+      id: formId,
+    },
+  });
+
+  if (!response) {
+    redirect("/forms/e");
+  }
+
+  if (!response.published) {
+    redirect("/forms/e");
+  }
 
   return response;
 };

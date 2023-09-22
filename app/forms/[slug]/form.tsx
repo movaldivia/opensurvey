@@ -8,8 +8,10 @@ import { useDebouncedCallback } from "use-debounce";
 import { revalidatePath } from "next/cache";
 import { Plus, Trash2 } from "lucide-react";
 
+import { useToast } from "@/components/ui/use-toast";
 import { updateQuestionFromUser, updateFormFromUser } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +24,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -44,15 +45,19 @@ export default function QuestionForm({
   title,
   createQuestion,
   deleteQuestion,
+  tooglePublishFormFromUser,
+  form,
 }: {
   formId: string;
   questions: any;
   title: string;
   createQuestion: any;
   deleteQuestion: any;
+  tooglePublishFormFromUser: any;
+  form: any;
 }) {
   type FormSchema = z.infer<typeof formSchema>;
-
+  const { toast } = useToast();
   const router = useRouter();
 
   // This can come from your database or API.
@@ -61,10 +66,10 @@ export default function QuestionForm({
     title,
   };
 
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues,
-  });
+  // const form = useForm<FormSchema>({
+  //   resolver: zodResolver(formSchema),
+  //   defaultValues,
+  // });
 
   const debounced = useDebouncedCallback(
     // function
@@ -86,6 +91,9 @@ export default function QuestionForm({
 
   return (
     <div className="mx-8 my-6 mt-16 sm:mx-48 sm:my-24">
+      <div className="my-10">
+        <Link href={`/forms`}>{"<-- Back to my forms"}</Link>
+      </div>
       <Input
         placeholder="Type form title"
         defaultValue={title}
@@ -120,11 +128,46 @@ export default function QuestionForm({
           size="sm"
           className="mt-2 ml-2"
           onClick={async () => {
-            router.push(`/forms/viewform/${formId}`);
+            await tooglePublishFormFromUser(formId);
           }}
         >
-          Publish
+          {form.published ? `Unpublish` : "Publish"}
         </Button>
+        {form.published ? (
+          <div>
+            <Button
+              type="button"
+              size="sm"
+              className="mt-8"
+              onClick={async () => {
+                await navigator.clipboard.writeText(
+                  `http://localhost:3000/forms/viewform/${formId}`
+                );
+                console.log("xd");
+                toast({
+                  title: "Link successfully copied",
+                });
+                // toast({
+                //   description: "Your message has been sent.",
+                // });
+                console.log("xd2");
+              }}
+            >
+              Copy Link
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="mt-8 ml-2"
+              onClick={() => {
+                router.push(`/forms/viewform/${formId}`);
+              }}
+            >
+              Go to form
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-12">
