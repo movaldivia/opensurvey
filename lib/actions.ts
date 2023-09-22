@@ -139,6 +139,84 @@ export const getQuestionsFromUser = async (formId: string) => {
   return response;
 };
 
+export const deleteQuestion = async (formId: string, questionId: string) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const formFromUser = await prisma.form.findFirst({
+    where: {
+      id: formId,
+    },
+  });
+
+  if (!formFromUser) {
+    return {
+      error: "Form does not exist",
+    };
+  }
+
+  if (formFromUser.userId !== session.user.id) {
+    return {
+      error: "Form is not from user",
+    };
+  }
+
+  const questionToDelete = await prisma.question.findFirst({
+    where: {
+      id: questionId,
+    },
+  });
+
+  if (!questionToDelete) {
+    return {
+      error: "Question does not exist",
+    };
+  }
+
+  if (questionToDelete.formId != formId) {
+    return {
+      error: "Given questionId is not from the given form Id",
+    };
+  }
+
+  const questions = await prisma.question.findMany({
+    where: {
+      formId,
+      order: {
+        gt: questionToDelete.order,
+      },
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+
+  const updateOperations = questions.map((question) => {
+    const newOrder = question.order - 1;
+    return prisma.question.update({
+      where: { id: question.id, formId },
+      data: { order: newOrder },
+    });
+  });
+
+  const deleteFunction = prisma.question.delete({
+    where: {
+      id: questionId,
+    },
+  });
+  updateOperations.push(deleteFunction);
+
+  await prisma.$transaction(updateOperations);
+
+  revalidatePath(`forms/${formId}`);
+
+  return;
+};
+
 export const createQuestion = async (formId: string, questionOrder: number) => {
   const session = await getSession();
   if (!session?.user.id) {

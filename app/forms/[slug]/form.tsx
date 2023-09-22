@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 import { Plus, Trash2 } from "lucide-react";
 
 import { updateQuestionFromUser, updateFormFromUser } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -42,13 +43,17 @@ export default function QuestionForm({
   questions,
   title,
   createQuestion,
+  deleteQuestion,
 }: {
   formId: string;
   questions: any;
   title: string;
   createQuestion: any;
+  deleteQuestion: any;
 }) {
   type FormSchema = z.infer<typeof formSchema>;
+
+  const router = useRouter();
 
   // This can come from your database or API.
   const defaultValues: Partial<FormSchema> = {
@@ -59,12 +64,6 @@ export default function QuestionForm({
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues,
-  });
-
-  const firstName = useWatch({
-    control: form.control,
-    // name: "firstName", // without supply name will watch the entire form, or ['firstName', 'lastName'] to watch both
-    // defaultValue: "default", // default value before the render
   });
 
   const debounced = useDebouncedCallback(
@@ -85,13 +84,8 @@ export default function QuestionForm({
     500
   );
 
-  const { fields, append } = useFieldArray({
-    name: "questions",
-    control: form.control,
-  });
-
   return (
-    <div className="mx-48 my-24">
+    <div className="mx-8 my-6 mt-16 sm:mx-48 sm:my-24">
       <Input
         placeholder="Type form title"
         defaultValue={title}
@@ -110,6 +104,27 @@ export default function QuestionForm({
         >
           Add Question
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-2 ml-8"
+          onClick={() => {
+            router.push(`/forms/preview/${formId}`);
+          }}
+        >
+          Preview
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          className="mt-2 ml-2"
+          onClick={async () => {
+            router.push(`/forms/viewform/${formId}`);
+          }}
+        >
+          Publish
+        </Button>
       </div>
 
       <div className="mt-12">
@@ -120,14 +135,14 @@ export default function QuestionForm({
                 defaultValue={element.text}
                 key={element.id + "2"}
                 placeholder="Type a question"
-                className="w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0"
+                className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0"
                 onChange={(e) => debounced(element.id, null, e.target.value)}
               />
               <Input
                 defaultValue={element.placeholder}
                 placeholder="Type a placeholder for the response"
                 key={element.id + "1"}
-                className="w-1/2 leading-7 [&:not(:first-child)]:mt-0 text-muted-foreground "
+                className="sm:w-1/2 leading-7 [&:not(:first-child)]:mt-0 text-muted-foreground "
                 onChange={(e) => debounced(element.id, e.target.value, null)}
               />
               <div className=" absolute top-2 left-0 transform -translate-x-full  hidden group-hover:inline-flex">
@@ -141,7 +156,12 @@ export default function QuestionForm({
                     />
                   </div>
                   <div className="px-2 mt-1 hover:cursor-pointer">
-                    <Trash2 className=" mt-1 text-gray-700 " />
+                    <Trash2
+                      className=" mt-1 text-gray-700 "
+                      onClick={async () => {
+                        await deleteQuestion(formId, element.id);
+                      }}
+                    />
                   </div>
                 </div>
               </div>
