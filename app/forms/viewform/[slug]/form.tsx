@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Form({
   questions,
@@ -12,6 +13,7 @@ export default function Form({
   submitForm: any;
   form: any;
 }) {
+  const router = useRouter();
   const [answers, setAnswers] = useState(
     questions.reduce((acc, question) => {
       acc[question.id] = "";
@@ -49,6 +51,7 @@ export default function Form({
         <Button
           onClick={async () => {
             await submitForm(answers, form.id);
+            router.push(`/forms/success/${form.id}`);
           }}
         >
           Submit
