@@ -105,6 +105,32 @@ export const updateFormFromUser = async (formId: string, title: string) => {
   return response;
 };
 
+export const getResponsesSummaryFromUser = async (formId: string) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const questions = await prisma.question.findMany({
+    where: {
+      formId: formId,
+    },
+    include: {
+      answers: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+  return questions;
+};
+
 export const tooglePublishFormFromUser = async (formId: string) => {
   const session = await getSession();
   if (!session?.user.id) {
