@@ -5,6 +5,67 @@ import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+function transform(obj: any) {
+  const result = [];
+
+  for (let key in obj) {
+    result.push({
+      answerText: obj[key],
+      questionId: key,
+    });
+  }
+
+  return result;
+}
+
+export const submitForm = async (answersHash: any, formId: string) => {
+  const answers = transform(answersHash);
+
+  console.log({ answers1: answers });
+
+  const form = await prisma.form.findFirstOrThrow({
+    where: {
+      id: formId,
+    },
+  });
+
+  answers.map(async (answer) => {
+    const question = await prisma.question.findFirstOrThrow({
+      where: {
+        id: answer.questionId,
+      },
+    });
+
+    if (question.formId !== form.id) {
+      throw new Error();
+    }
+    return answer;
+  });
+
+  const response = await prisma.response.create({
+    data: {
+      submittedAt: new Date().toISOString(),
+    },
+  });
+
+  const createAnswerOperations = answers.map((answer) => {
+    return prisma.answer.create({
+      data: {
+        answerText: answer.answerText,
+        questionId: answer.questionId,
+        formId: form.id,
+        responseId: response.id,
+      },
+    });
+  });
+
+  console.log({ createAnswerOperations });
+
+  await prisma.$transaction(createAnswerOperations);
+
+  return;
+};
+
 export const createForm = async () => {
   const session = await getSession();
   if (!session?.user.id) {

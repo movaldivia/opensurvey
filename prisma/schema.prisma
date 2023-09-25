@@ -38,6 +38,7 @@ model Form {
   updatedAt DateTime @updatedAt
   questions Question[]
   published Boolean @default(false)
+  answers Answer []
 }
 
 model Question {
@@ -51,6 +52,28 @@ model Question {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   order Int
+  answers Answer []
+}
+
+model Response {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  submittedAt DateTime
+  answers Answer []
+}
+
+model Answer {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  answerText String
+  questionId String
+  question Question @relation(fields: [questionId], references: [id])
+  formId String
+  form Form @relation(fields: [formId], references: [id])
+  responseId String
+  response Response @relation(fields: [responseId], references: [id])
 }
 
 model Account {
@@ -96,3 +119,5 @@ model VerificationRequest {
 
   @@unique([identifier, token])
 }
+
+
