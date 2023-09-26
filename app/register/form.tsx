@@ -32,7 +32,7 @@ export const RegisterForm = () => {
         return;
       }
 
-      signIn(undefined, { callbackUrl: "/" });
+      signIn(undefined, { callbackUrl: "/forms" });
     } catch (error: any) {
       setLoading(false);
       setError(error);

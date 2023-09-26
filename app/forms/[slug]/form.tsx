@@ -159,14 +159,13 @@ export default function QuestionForm({
                   await navigator.clipboard.writeText(
                     `http://localhost:3000/forms/viewform/${formId}`
                   );
-                  console.log("xd");
+
                   toast({
                     title: "Link successfully copied",
                   });
                   // toast({
                   //   description: "Your message has been sent.",
                   // });
-                  console.log("xd2");
                 }}
               >
                 Copy Link

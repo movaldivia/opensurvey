@@ -1,133 +1,18 @@
-import TypographyH1 from "@/components/typography/typography-h1";
-import TeamSwitcher from "@/components/dashboard/team-switcher";
-import { MainNav } from "@/components/dashboard/main-nav";
-import { Search } from "@/components/dashboard/search";
-import { UserNav } from "@/components/dashboard/user-nav";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { FormInput, Github } from "lucide-react";
-import { Icons } from "@/components/icons";
+import { Github } from "lucide-react";
 import { checkIfUserIsLoggedIn } from "@/lib/actions";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-import {
-  Card,
-  CardHeader,
-  CardDescription,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-export function Register() {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>Create Form</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[475px]">
-        <DialogHeader>
-          <DialogTitle>Register</DialogTitle>
-          <DialogDescription>
-            For full access and a seamless experience on the platform, please
-            take a moment to register.
-          </DialogDescription>
-        </DialogHeader>
-        {/* <div className="grid grid-cols-2 gap-6">
-          <Button variant="outline">
-            <Icons.gitHub className="mr-2 h-4 w-4" />
-            Github
-          </Button>
-          <Button variant="outline">
-            <Icons.google className="mr-2 h-4 w-4" />
-            Google
-          </Button>
-        </div> */}
-        {/* <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div> */}
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" />
-        </div>
-        <DialogFooter>
-          <Button type="submit">Register</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-export function DemoCreateAccount() {
-  return (
-    <Card>
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Create an account</CardTitle>
-        <CardDescription>
-          Enter your email below to create your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid grid-cols-2 gap-6">
-          <Button variant="outline">
-            <Icons.gitHub className="mr-2 h-4 w-4" />
-            Github
-          </Button>
-          <Button variant="outline">
-            <Icons.google className="mr-2 h-4 w-4" />
-            Google
-          </Button>
-        </div>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" />
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button className="w-full">Create account</Button>
-      </CardFooter>
-    </Card>
-  );
-}
+import { Search } from "@/components/dashboard/search";
+import { UserNav } from "@/components/dashboard/user-nav";
+import TeamSwitcher from "@/components/dashboard/team-switcher";
+import { RegisterDialog } from "./registerDialog";
+import { signOut } from "next-auth/react";
+import Logout from "@/components/logout";
+import { RegisterLink } from "@/components/registerLink";
+import { LoginLink } from "@/components/loginLink";
 
 export default async function Home() {
   const isUserLogged = await checkIfUserIsLoggedIn();
-  console.log({ isUserLogged });
   return (
     <div>
       <div className="border-b">
@@ -140,21 +25,26 @@ export default async function Home() {
             OpenSurvey
           </h4>
           {/* <MainNav className="mx-6" /> */}
-          <div className="ml-auto flex items-center space-x-2">
+          <div className="ml-auto flex items-center space-x-6 text-sm font-medium">
             {/* <Search />
             <UserNav /> */}
+            {!isUserLogged && <LoginLink />}
+            {!isUserLogged && <RegisterLink />}
+            {isUserLogged && <Logout />}
 
-            <span className="text-slate-700 text-sm cursor-pointer">
-              Give us a star
-            </span>
-            <Github
-              className="cursor-pointer"
-              color="#000000"
-              strokeWidth={1.75}
-              absoluteStrokeWidth
-              size={18}
-              fill="true"
-            />
+            <div className="flex items-center">
+              <span className="text-slate-700 text-sm cursor-pointer mr-2">
+                Give us a star
+              </span>
+              <Github
+                className="cursor-pointer"
+                color="#000000"
+                strokeWidth={1.75}
+                absoluteStrokeWidth
+                size={18}
+                fill="true"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -173,15 +63,12 @@ export default async function Home() {
           </div>
         </div>
         <div className="mt-4 flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
-          {/* <Link href={"/register"}> */}
-          {/* <Button onClick={}>Create form</Button> */}
-          {/* </Link> */}
           {isUserLogged ? (
             <Link href={"/forms"}>
               <Button>Create form</Button>
             </Link>
           ) : (
-            <Register></Register>
+            <RegisterDialog></RegisterDialog>
           )}
 
           <Button variant="secondary">GitHub</Button>

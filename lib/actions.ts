@@ -21,8 +21,6 @@ function transform(obj: any) {
 export const submitForm = async (answersHash: any, formId: string) => {
   const answers = transform(answersHash);
 
-  console.log({ answers1: answers });
-
   const form = await prisma.form.findFirstOrThrow({
     where: {
       id: formId,
@@ -58,8 +56,6 @@ export const submitForm = async (answersHash: any, formId: string) => {
       },
     });
   });
-
-  console.log({ createAnswerOperations });
 
   await prisma.$transaction(createAnswerOperations);
 

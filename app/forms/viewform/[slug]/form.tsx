@@ -20,7 +20,7 @@ export default function Form({
       return acc;
     }, {})
   );
-  console.log({ answers });
+
   return (
     <div>
       <div className="mt-12">
