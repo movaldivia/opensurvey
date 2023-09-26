@@ -66,6 +66,14 @@ export const submitForm = async (answersHash: any, formId: string) => {
   return;
 };
 
+export const checkIfUserIsLoggedIn = async () => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return false;
+  }
+  return true;
+};
+
 export const createForm = async () => {
   const session = await getSession();
   if (!session?.user.id) {
