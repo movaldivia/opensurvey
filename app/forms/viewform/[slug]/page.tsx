@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const title = form.title;
 
   return (
-    <div className="mx-8 my-6 sm:mx-48 sm:my-8">
+    <div className="mx-auto	my-6 mt-16 sm:my-24 w-full max-w-xs sm:max-w-4xl">
       <div className="text-3xl font-semibold tracking-tight transition-colors">
         {title}
       </div>

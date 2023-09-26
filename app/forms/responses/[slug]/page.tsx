@@ -6,6 +6,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { MoveLeft } from "lucide-react";
+
 import Link from "next/link";
 
 import { getResponsesSummaryFromUser } from "@/lib/actions";
@@ -39,7 +41,20 @@ export default async function Page({ params }: { params: { slug: string } }) {
   return (
     <div className="mx-48 my-20">
       <div className="my-10">
-        <Link href={`/forms`}>{"<-- Back to my forms"}</Link>
+        <Link href={`/forms`}>
+          <div className="flex items-center">
+            {
+              <MoveLeft
+                className="mr-2"
+                color="#000000"
+                strokeWidth={1.75}
+                absoluteStrokeWidth
+                size={18}
+              />
+            }
+            {"Back to my forms"}
+          </div>
+        </Link>
       </div>
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
         Responses

@@ -19,7 +19,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
   return (
     <div className="mx-auto	my-6 mt-16 sm:my-24 w-full max-w-xs sm:max-w-4xl">
       <div className="my-10">
-        <Link href={`/forms`}>
+        <Link href={`/forms/${form.id}`}>
           <div className="flex items-center">
             {
               <MoveLeft
