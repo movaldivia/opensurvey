@@ -10,70 +10,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
-  id            String    @id @default(uuid())
+  id            String     @id @default(uuid())
   name          String
-  email         String?   @unique
+  email         String?    @unique
   password      String?
-  emailVerified DateTime? @map("email_verified")
+  emailVerified DateTime?  @map("email_verified")
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   accounts      Account[]
   sessions      Session[]
-  forms   Form[]
-  questions Question[]
+  forms         Form[]
+  questions     Question[]
 
   @@map("users")
 }
 
 model Form {
-  id String @id @default(uuid())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  title String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String     @id @default(uuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  title     String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   questions Question[]
-  published Boolean @default(false)
-  answers Answer []
+  published Boolean    @default(false)
+  answers   Answer[]
 }
 
 model Question {
-  formId String
-  form Form @relation(fields: [formId], references: [id])
-  id String @id @default(uuid())
-  text String @default("")
-  placeholder String @default("")
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  order Int
-  answers Answer []
+  formId      String
+  form        Form     @relation(fields: [formId], references: [id])
+  id          String   @id @default(uuid())
+  text        String   @default("")
+  placeholder String   @default("")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  order       Int
+  answers     Answer[]
+  type        String
+  options     Option[]
 }
 
 model Response {
-  id String @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   submittedAt DateTime
-  answers Answer []
+  answers     Answer[]
 }
 
 model Answer {
-  id String @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   answerText String
   questionId String
-  question Question @relation(fields: [questionId], references: [id])
-  formId String
-  form Form @relation(fields: [formId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
+  formId     String
+  form       Form     @relation(fields: [formId], references: [id])
   responseId String
-  response Response @relation(fields: [responseId], references: [id])
+  response   Response @relation(fields: [responseId], references: [id])
+  optionId String?
+  option   Option? @relation(fields: [optionId], references: [id])
+}
+
+model Option {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  questionId String
+  optionText String
+  question   Question @relation(fields: [questionId], references: [id])
+  order      Int
+  answer Answer[]
 }
 
 model Account {
@@ -119,5 +132,3 @@ model VerificationRequest {
 
   @@unique([identifier, token])
 }
-
-

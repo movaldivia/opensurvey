@@ -16,3 +16,7 @@ npx prisma db seed
 # Prisma Studio
 
 npx prisma studio
+
+# Prisma reset database
+
+npx prisma migrate reset

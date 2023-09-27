@@ -337,6 +337,66 @@ export const deleteQuestion = async (formId: string, questionId: string) => {
   return;
 };
 
+export const createOptionQuestion = async (
+  formId: string,
+  questionOrder: number
+) => {
+  const session = await getSession();
+
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  await prisma.form.findFirstOrThrow({
+    where: {
+      id: formId,
+      userId: session.user.id,
+    },
+  });
+
+  const questions = await prisma.question.findMany({
+    where: {
+      formId,
+      order: {
+        gte: questionOrder,
+      },
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+
+  const updateOperations = questions.map((question) => {
+    const newOrder = question.order + 1;
+    return prisma.question.update({
+      where: { id: question.id, formId },
+      data: { order: newOrder },
+    });
+  });
+
+  // const create
+
+  const createQuestionFunction = prisma.question.create({
+    data: {
+      userId: session.user.id,
+      formId,
+      order: questionOrder,
+      type: "MANY_OPTIONS",
+      options: {
+        create: [{ order: 1, optionText: "Option 1" }],
+      },
+    },
+  });
+
+  updateOperations.push(createQuestionFunction);
+
+  await prisma.$transaction(updateOperations);
+
+  return;
+};
+
 export const createQuestion = async (formId: string, questionOrder: number) => {
   const session = await getSession();
   if (!session?.user.id) {
@@ -388,6 +448,7 @@ export const createQuestion = async (formId: string, questionOrder: number) => {
       userId: session.user.id,
       formId,
       order: questionOrder,
+      type: "SHORT_RESPONSE",
     },
   });
 

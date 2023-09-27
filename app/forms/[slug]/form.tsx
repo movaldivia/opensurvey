@@ -49,6 +49,7 @@ export default function QuestionForm({
   deleteQuestion,
   tooglePublishFormFromUser,
   form,
+  createOptionQuestion,
 }: {
   formId: string;
   questions: any;
@@ -57,6 +58,7 @@ export default function QuestionForm({
   deleteQuestion: any;
   tooglePublishFormFromUser: any;
   form: any;
+  createOptionQuestion: any;
 }) {
   type FormSchema = z.infer<typeof formSchema>;
   const { toast } = useToast();
@@ -127,6 +129,17 @@ export default function QuestionForm({
             }}
           >
             Add Question
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-2"
+            onClick={async () => {
+              await createOptionQuestion(formId, questions.length);
+            }}
+          >
+            Add Option Question
           </Button>
           <Button
             type="button"
