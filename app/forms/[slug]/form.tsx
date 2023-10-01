@@ -8,7 +8,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { revalidatePath } from "next/cache";
 import { Plus, Trash2 } from "lucide-react";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -61,6 +61,7 @@ export default function QuestionForm({
   createOptionQuestion,
   updateOptionText,
   createOption,
+  deleteOption,
 }: {
   formId: string;
   questions: any;
@@ -72,6 +73,7 @@ export default function QuestionForm({
   createOptionQuestion: any;
   updateOptionText: any;
   createOption: any;
+  deleteOption: any;
 }) {
   type FormSchema = z.infer<typeof formSchema>;
   const { toast } = useToast();
@@ -151,7 +153,7 @@ export default function QuestionForm({
             type="button"
             variant="outline"
             size="sm"
-            className="mt-2"
+            className="mt-2 ml-2"
             onClick={async () => {
               await createOptionQuestion(formId, questions.length);
             }}
@@ -263,7 +265,7 @@ export default function QuestionForm({
             }
             if (element.type === "MANY_OPTIONS") {
               return (
-                <div key={element.id} className="mb-5">
+                <div key={element.id} className="mb-5 group relative">
                   <Input
                     defaultValue={element.text}
                     key={element.id + "2"}
@@ -278,7 +280,30 @@ export default function QuestionForm({
                     formId={formId}
                     questionId={element.id}
                     createOption={createOption}
+                    deleteOption={deleteOption}
                   />
+                  <div className=" absolute top-0 left-0 transform -translate-x-full  hidden group-hover:inline-flex">
+                    <div className="mr-4 flex items-center">
+                      <div className="hover:cursor-pointer">
+                        <Plus
+                          size={24}
+                          className=" text-gray-700"
+                          onClick={async () => {
+                            await createQuestion(formId, element.order + 1);
+                          }}
+                        />
+                      </div>
+                      <div className="pl-1 hover:cursor-pointer">
+                        <Trash2
+                          size={22}
+                          className=" mt-1 text-gray-700 "
+                          onClick={async () => {
+                            await deleteQuestion(formId, element.id);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               );
             }
@@ -289,12 +314,20 @@ export default function QuestionForm({
   );
 }
 
-const QuestionRadioGroup = ({ options, formId, questionId, createOption }) => {
+const QuestionRadioGroup = ({
+  options,
+  formId,
+  questionId,
+  createOption,
+  deleteOption,
+}) => {
   // optionText: string,
   // optionId: string,
   // questionId: string,
   // formId: string
   console.log({ options, len: options.length });
+
+  const [prevOptionsLength, setPrevOptionsLength] = useState(options.length);
 
   const debounced = useDebouncedCallback(
     // function
@@ -309,9 +342,13 @@ const QuestionRadioGroup = ({ options, formId, questionId, createOption }) => {
 
   // Monitor changes in the options array
   useEffect(() => {
-    // After adding a new option, set the focus to the last input
-    lastInputRef.current && lastInputRef.current.focus();
-  }, [options]);
+    if (options.length > prevOptionsLength) {
+      // A new option has been added, set the focus to the last input
+      lastInputRef.current && lastInputRef.current.focus();
+    }
+    // Update the previous length state
+    setPrevOptionsLength(options.length);
+  }, [options, prevOptionsLength]);
 
   // questionId: string,
   // formId: string,
@@ -357,7 +394,10 @@ const QuestionRadioGroup = ({ options, formId, questionId, createOption }) => {
                     size={20}
                     className=" text-gray-700 "
                     onClick={async () => {
-                      // await deleteQuestion(formId, element.id);
+                      // questionId: string,
+                      // optionId: string,
+                      // formId: string
+                      await deleteOption(questionId, option.id, formId);
                     }}
                   />
                 </div>
