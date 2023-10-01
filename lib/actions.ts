@@ -5,6 +5,105 @@ import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+export const createOption = async (
+  questionId: string,
+  formId: string,
+  order: number
+) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  // console.log({questionId, session.user.id, formId})
+
+  const question = await prisma.question.findFirstOrThrow({
+    where: {
+      id: questionId,
+      userId: session.user.id,
+      formId,
+      // order: {
+      //   gt: order,
+      // },
+    },
+    include: {
+      options: {
+        orderBy: {
+          order: "asc",
+        },
+      },
+    },
+  });
+
+  const options = question.options;
+
+  const updateOptionsOrder = options
+    .filter((option) => {
+      if (option.order >= order) {
+        return true;
+      }
+      return false;
+    })
+    .map((option) => {
+      const newOrder = question.order + 1;
+      return prisma.option.update({
+        where: { id: option.id },
+        data: { order: newOrder },
+      });
+    });
+
+  const createOrder = prisma.option.create({
+    data: {
+      order,
+      optionText: `Option ${order}`,
+      questionId: questionId,
+    },
+  });
+
+  updateOptionsOrder.push(createOrder);
+
+  await prisma.$transaction(updateOptionsOrder);
+
+  revalidatePath(`forms/${formId}`);
+};
+
+export const updateOptionText = async (
+  optionText: string,
+  optionId: string,
+  questionId: string,
+  formId: string
+) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  await prisma.question.findFirstOrThrow({
+    where: {
+      userId: session.user.id,
+      id: questionId,
+      formId,
+    },
+  });
+
+  await prisma.option.update({
+    where: {
+      id: optionId,
+    },
+    data: {
+      optionText,
+    },
+  });
+
+  revalidatePath(`forms/${formId}`);
+
+  return;
+};
+
 function transform(obj: any) {
   const result = [];
 
@@ -252,6 +351,13 @@ export const getQuestionsFromUser = async (formId: string) => {
     orderBy: {
       order: "asc",
     },
+    include: {
+      options: {
+        orderBy: {
+          order: "asc",
+        },
+      },
+    },
   });
 
   revalidatePath(`forms/${formId}`);
@@ -393,6 +499,8 @@ export const createOptionQuestion = async (
   updateOperations.push(createQuestionFunction);
 
   await prisma.$transaction(updateOperations);
+
+  revalidatePath(`forms/${formId}`);
 
   return;
 };

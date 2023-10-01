@@ -6,6 +6,8 @@ import {
   deleteQuestion,
   tooglePublishFormFromUser,
   createOptionQuestion,
+  updateOptionText,
+  createOption,
 } from "@/lib/actions";
 
 export default async function Page({ params }: { params: { slug: string } }) {
@@ -24,6 +26,8 @@ export default async function Page({ params }: { params: { slug: string } }) {
           tooglePublishFormFromUser={tooglePublishFormFromUser}
           form={form}
           createOptionQuestion={createOptionQuestion}
+          updateOptionText={updateOptionText}
+          createOption={createOption}
         />
       }
     </>

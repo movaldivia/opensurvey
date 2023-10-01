@@ -74,7 +74,7 @@ export default async function Home() {
           <Button variant="secondary">GitHub</Button>
         </div>
       </section>
-      <div className="px-32 mt-8">
+      {/* <div className="px-32 mt-8">
         <div className="mb-4 flex items-center">
           <div className="font-bold flex items-center pr-8  cursor-pointer">
             Dashboard
@@ -86,7 +86,7 @@ export default async function Home() {
             Responses
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
