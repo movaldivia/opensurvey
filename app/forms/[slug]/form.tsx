@@ -25,15 +25,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { MoveLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
@@ -78,10 +70,6 @@ export default function QuestionForm({
   type FormSchema = z.infer<typeof formSchema>;
   const { toast } = useToast();
   const router = useRouter();
-
-  console.log({ questions });
-
-  console.log({ form });
 
   // This can come from your database or API.
   const defaultValues: Partial<FormSchema> = {
@@ -325,7 +313,6 @@ const QuestionRadioGroup = ({
   // optionId: string,
   // questionId: string,
   // formId: string
-  console.log({ options, len: options.length });
 
   const [prevOptionsLength, setPrevOptionsLength] = useState(options.length);
 
@@ -363,14 +350,14 @@ const QuestionRadioGroup = ({
   }
 
   return (
-    <RadioGroup defaultValue="option-one font-base">
+    <RadioGroup>
       {options.map((option, index) => {
         return (
           <div
             key={option.id}
             className="flex items-center space-x-2 relative group"
           >
-            <RadioGroupItem value="option-one" id="option-one" />
+            <RadioGroupItem value={option.id} id={option.id} />
             <Input
               ref={options.length === index + 1 ? lastInputRef : null}
               defaultValue={option.optionText}
@@ -413,13 +400,14 @@ const QuestionRadioGroup = ({
         key={"dsd"}
         className="flex items-center space-x-2 "
       >
-        <RadioGroupItem value="option-one" id="option-one" />
+        <RadioGroupItem value={"input"} id={"input"} />
         <Input
           defaultValue="Add other option"
           placeholder="Type the option"
           // disabled
+
           className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0 text-slate-400"
-          // onChange={(e) => debouncedCreateOption(options.length + 1)}
+          onChange={(e) => debouncedCreateOption(options.length + 1)}
         />
       </div>
     </RadioGroup>

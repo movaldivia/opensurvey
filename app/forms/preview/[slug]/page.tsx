@@ -6,6 +6,8 @@ import {
 } from "@/lib/actions";
 import Link from "next/link";
 
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MoveLeft } from "lucide-react";
@@ -39,20 +41,33 @@ export default async function Page({ params }: { params: { slug: string } }) {
       </div>
 
       <div className="mt-12">
-        {questions.map((element) => {
-          return (
-            <div key={element.id} className="mb-5 group relative">
-              <div className="sm:w-1/2 tracking-tight flex h-9 w-full rounded-md border-0 bg-transparent py-1 text-sm transition-colors leading-7 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-                {element.text}
+        {questions.map((question) => {
+          if (question.type === "SHORT_RESPONSE") {
+            return (
+              <div key={question.id} className="mb-5 group relative">
+                <div className="sm:w-1/2 tracking-tight flex h-9 w-full rounded-md border-0 bg-transparent py-1 text-sm transition-colors leading-7 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                  {question.text}
+                </div>
+                <Input
+                  // defaultValue={element.placeholder}
+                  placeholder={question.placeholder ? question.placeholder : ""}
+                  key={question.id + "1"}
+                  className="sm:w-1/2 leading-7 [&:not(:first-child)]:mt-0 text-muted-foreground "
+                />
               </div>
-              <Input
-                // defaultValue={element.placeholder}
-                placeholder={element.placeholder ? element.placeholder : ""}
-                key={element.id + "1"}
-                className="sm:w-1/2 leading-7 [&:not(:first-child)]:mt-0 text-muted-foreground "
-              />
-            </div>
-          );
+            );
+          } else if ("MANY_OPTIONS") {
+            return (
+              <div key={question.id}>
+                <div className="sm:w-1/2 tracking-tight flex h-9 w-full rounded-md border-0 bg-transparent py-1 text-sm transition-colors leading-7 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                  {question.text}
+                </div>
+                <QuestionRadioGroup options={question.options} />
+              </div>
+            );
+          } else {
+            return null;
+          }
         })}
       </div>
       <div className="mt-16">
@@ -61,3 +76,25 @@ export default async function Page({ params }: { params: { slug: string } }) {
     </div>
   );
 }
+
+const QuestionRadioGroup = ({ options }) => {
+  return (
+    <RadioGroup defaultValue="option-one font-base">
+      {options.map((option) => {
+        return (
+          <div
+            key={option.id}
+            className="flex items-center space-x-2 relative group"
+          >
+            <RadioGroupItem value={option.id} id={option.id} />
+            <Input
+              defaultValue={option.optionText}
+              placeholder="Type the option"
+              className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0"
+            />
+          </div>
+        );
+      })}
+    </RadioGroup>
+  );
+};

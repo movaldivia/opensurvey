@@ -47,16 +47,11 @@ export const createOption = async (
     };
   }
 
-  // console.log({questionId, session.user.id, formId})
-
   const question = await prisma.question.findFirstOrThrow({
     where: {
       id: questionId,
       userId: session.user.id,
       formId,
-      // order: {
-      //   gt: order,
-      // },
     },
     include: {
       options: {
@@ -138,10 +133,21 @@ function transform(obj: any) {
   const result = [];
 
   for (let key in obj) {
-    result.push({
-      answerText: obj[key],
-      questionId: key,
-    });
+    if (obj[key].type === "SHORT_RESPONSE") {
+      result.push({
+        answerText: obj[key].text,
+        questionId: key,
+        type: "SHORT_RESPONSE",
+        optionId: null,
+      });
+    } else if (obj[key].type === "MANY_OPTIONS") {
+      result.push({
+        answerText: null,
+        questionId: key,
+        optionId: obj[key].optionId,
+        type: "MANY_OPTIONS",
+      });
+    }
   }
 
   return result;
@@ -166,7 +172,6 @@ export const submitForm = async (answersHash: any, formId: string) => {
     if (question.formId !== form.id) {
       throw new Error();
     }
-    return answer;
   });
 
   const response = await prisma.response.create({
@@ -176,14 +181,28 @@ export const submitForm = async (answersHash: any, formId: string) => {
   });
 
   const createAnswerOperations = answers.map((answer) => {
-    return prisma.answer.create({
-      data: {
-        answerText: answer.answerText,
-        questionId: answer.questionId,
-        formId: form.id,
-        responseId: response.id,
-      },
-    });
+    if (answer.type === "SHORT_RESPONSE") {
+      return prisma.answer.create({
+        data: {
+          answerText: answer.answerText,
+          questionId: answer.questionId,
+          formId: form.id,
+          responseId: response.id,
+        },
+      });
+    } else if (answer.type === "MANY_OPTIONS") {
+      return prisma.answer.create({
+        data: {
+          questionId: answer.questionId,
+          formId: form.id,
+          responseId: response.id,
+          optionId: answer.optionId,
+          answerText: "",
+        },
+      });
+    } else {
+      throw new Error("Not valid type");
+    }
   });
 
   await prisma.$transaction(createAnswerOperations);
