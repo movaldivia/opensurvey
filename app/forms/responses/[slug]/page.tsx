@@ -12,28 +12,58 @@ import Link from "next/link";
 
 import { getResponsesSummaryFromUser } from "@/lib/actions";
 
+import ResponsePie from "@/components/pie";
+
 function Question({ question }) {
-  return (
-    <Card className="col-span-3 mt-8">
-      <CardHeader>
-        <CardTitle>{question.text}</CardTitle>
-        <CardDescription>{`${question.answers.length} responses`}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-8">
-          {question.answers.map((answer) => {
-            return (
-              <div key={answer.key} className="ml-4 space-y-1">
-                <p className="text-sm text-muted-foreground">
-                  {answer.answerText}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
-  );
+  console.log({ question });
+
+  if (question.type === "SHORT_RESPONSE") {
+    return (
+      <Card className="col-span-3 mt-8">
+        <CardHeader>
+          <CardTitle>{question.text}</CardTitle>
+          <CardDescription>{`${question.answers.length} responses`}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-8">
+            {}
+            {question.answers.map((answer) => {
+              return (
+                <div key={answer.key} className="ml-4 space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    {answer.answerText}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  } else if (question.type === "MANY_OPTIONS") {
+    return (
+      <Card className="col-span-3 mt-8">
+        <CardHeader>
+          <CardTitle>{question.text}</CardTitle>
+          <CardDescription>{`${question.answers.length} responses`}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-8">
+            <ResponsePie />
+            {question.answers.map((answer) => {
+              return (
+                <div key={answer.key} className="ml-4 space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    {answer.answerText}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
 export default async function Page({ params }: { params: { slug: string } }) {
