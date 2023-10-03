@@ -1,17 +1,19 @@
 import {
   getQuestionsFromUser,
-  getFormFromUser,
-  createShortResponseQuestion,
-  deleteQuestion,
   getForm,
   submitForm,
 } from "@/lib/actions/actions";
-import Link from "next/link";
 
 import Form from "./form";
+import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const questions = await getQuestionsFromUser(params.slug);
+
+  if (!questions || "error" in questions) {
+    notFound();
+  }
+
   const form = await getForm(params.slug);
 
   const title = form.title;

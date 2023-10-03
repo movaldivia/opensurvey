@@ -1,8 +1,9 @@
 "use client";
 
-import * as z from "zod";
 import { useDebouncedCallback } from "use-debounce";
 import { Plus, Trash2 } from "lucide-react";
+
+import { type Form, type Question, Prisma, type Option } from "@prisma/client";
 
 import { useRef, useEffect, useState } from "react";
 import { QuestionCommand } from "@/components/command";
@@ -24,24 +25,12 @@ import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
 
-const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "Title must be at least 1 characters.",
-  }),
-  questions: z
-    .array(
-      z.object({
-        text: z.string().min(1, { message: "Can't left empty question" }),
-        placeholder: z.string(),
-      })
-    )
-    .optional(),
-});
+type QuestionWithOptions = Prisma.QuestionGetPayload<{
+  include: { options: true };
+}>;
 
 export default function QuestionForm({
-  formId,
   questions,
-  title,
   createShortResponseQuestion,
   deleteQuestion,
   tooglePublishFormFromUser,
@@ -51,32 +40,19 @@ export default function QuestionForm({
   createOption,
   deleteOption,
 }: {
-  formId: string;
-  questions: any;
-  title: string;
+  questions: QuestionWithOptions[];
   createShortResponseQuestion: any;
   deleteQuestion: any;
   tooglePublishFormFromUser: any;
-  form: any;
+  form: Form;
   createOptionQuestion: any;
   updateOptionText: any;
   createOption: any;
   deleteOption: any;
 }) {
-  type FormSchema = z.infer<typeof formSchema>;
+  const { id: formId, title } = form;
   const { toast } = useToast();
   const router = useRouter();
-
-  // This can come from your database or API.
-  const defaultValues: Partial<FormSchema> = {
-    questions,
-    title,
-  };
-
-  // const form = useForm<FormSchema>({
-  //   resolver: zodResolver(formSchema),
-  //   defaultValues,
-  // });
 
   const debounced = useDebouncedCallback(
     // function
@@ -327,6 +303,12 @@ const QuestionRadioGroup = ({
   questionId,
   createOption,
   deleteOption,
+}: {
+  options: Option[];
+  formId: string;
+  questionId: string;
+  createOption: any;
+  deleteOption: any;
 }) => {
   // optionText: string,
   // optionId: string,
@@ -344,7 +326,7 @@ const QuestionRadioGroup = ({
     500
   );
 
-  const lastInputRef = useRef(null);
+  const lastInputRef = useRef<HTMLInputElement | null>(null);
 
   // Monitor changes in the options array
   useEffect(() => {

@@ -1,14 +1,7 @@
 "use client";
 
-import React, { PureComponent } from "react";
-import {
-  PieChart,
-  Pie,
-  Sector,
-  Cell,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
+import React from "react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 
 type PieData = {
   name: string;
@@ -34,35 +27,14 @@ const COLORS = [
 
 const RADIAN = Math.PI / 180;
 
-const renderCustomizedLabell = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-  index,
-}) => {
-  // Adjust this threshold as needed
-  const MIN_PERCENT_FOR_LABEL = 0.11; // 5%
-
-  if (percent < MIN_PERCENT_FOR_LABEL) return null;
-
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.7; // Adjusted from 0.5 to 0.7
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="white"
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="central"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
+type CustomizedLabelProps = {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  percent: number;
+  index: number;
 };
 
 const renderCustomizedLabel = ({
@@ -73,7 +45,7 @@ const renderCustomizedLabel = ({
   outerRadius,
   percent,
   index,
-}) => {
+}: CustomizedLabelProps) => {
   // Adjust this threshold as needed
   const MIN_PERCENT_FOR_LABEL = 0.2; // 5%
 
@@ -96,27 +68,6 @@ const renderCustomizedLabel = ({
   );
 };
 
-const renderLegend = (props) => {
-  const { payload } = props;
-  const totalValue = payload.reduce(
-    (acc, entry) => acc + (Number.isFinite(entry.value) ? entry.value : 0),
-    0
-  );
-
-  return (
-    <ul>
-      {payload.map((entry, index) => {
-        const percentage =
-          totalValue !== 0 ? ((entry.value / totalValue) * 100).toFixed(2) : 0;
-        return (
-          <li key={`item-${index}`} style={{ color: entry.color }}>
-            {entry.name} ({percentage}%)
-          </li>
-        );
-      })}
-    </ul>
-  );
-};
 const ResponsePie = ({ data }: ResponsePieProps) => {
   if (!data || data.length === 0) {
     return null;
@@ -135,7 +86,7 @@ const ResponsePie = ({ data }: ResponsePieProps) => {
           dataKey="value"
           isAnimationActive={false}
         >
-          {data.map((entry, index) => (
+          {data.map((_, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
@@ -148,8 +99,6 @@ const ResponsePie = ({ data }: ResponsePieProps) => {
             paddingLeft: "0px",
             fontSize: "12px",
           }}
-          // content={renderLegend}
-          // align="right"
         />
       </PieChart>
     </ResponsiveContainer>

@@ -5,29 +5,55 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
+import { type Form, type Question, Prisma, type Option } from "@prisma/client";
+
+type QuestionWithOptions = Prisma.QuestionGetPayload<{
+  include: {
+    options: true;
+  };
+}>;
+
+type ShortResponseAnswer = {
+  type: "SHORT_RESPONSE";
+  optionId: null;
+  text: string;
+};
+
+type ManyOptionsAnswer = {
+  type: "MANY_OPTIONS";
+  optionId: string;
+  text: string;
+};
+
+type Accumulator = {
+  [key: string]: ShortResponseAnswer | ManyOptionsAnswer;
+};
+
+type SetAnswers = React.Dispatch<React.SetStateAction<Accumulator>>;
+
 export default function Form({
   questions,
   submitForm,
   form,
 }: {
-  questions: any;
+  questions: QuestionWithOptions[];
   submitForm: any;
   form: any;
 }) {
   const router = useRouter();
   const [answers, setAnswers] = useState(
-    questions.reduce((acc, question) => {
-      if (question.type === "SHORT_RESPONSE")
+    questions.reduce<Accumulator>((acc, question) => {
+      if (question.type === "SHORT_RESPONSE") {
         acc[question.id] = {
           type: "SHORT_RESPONSE",
           optionId: null,
           text: "",
         };
-      else if (question.type === "MANY_OPTIONS") {
+      } else if (question.type === "MANY_OPTIONS") {
         acc[question.id] = {
           type: "MANY_OPTIONS",
-          optionId: null,
-          text: null,
+          optionId: "",
+          text: "",
         };
       }
       return acc;
@@ -53,6 +79,8 @@ export default function Form({
                       [question.id]: {
                         ...prevAnswers[question.id],
                         text: newValue,
+                        type: "SHORT_RESPONSE",
+                        optionId: null,
                       },
                     }));
                   }}
@@ -94,7 +122,15 @@ export default function Form({
   );
 }
 
-const QuestionRadioGroup = ({ options, setAnswers, questionId }) => {
+const QuestionRadioGroup = ({
+  options,
+  setAnswers,
+  questionId,
+}: {
+  options: Option[];
+  setAnswers: SetAnswers;
+  questionId: string;
+}) => {
   return (
     <RadioGroup
       onValueChange={(value) => {
@@ -102,8 +138,9 @@ const QuestionRadioGroup = ({ options, setAnswers, questionId }) => {
         setAnswers((prevAnswers) => ({
           ...prevAnswers,
           [questionId]: {
-            ...prevAnswers[questionId],
+            text: "",
             optionId: newValue,
+            type: "MANY_OPTIONS",
           },
         }));
       }}

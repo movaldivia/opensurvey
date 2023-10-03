@@ -11,8 +11,6 @@ import {
   CommandDialog,
 } from "@/components/ui/command";
 
-import { useEffect } from "react";
-
 export function QuestionCommand({
   open,
   setOpen,
@@ -20,17 +18,14 @@ export function QuestionCommand({
   formId,
   createShortResponseQuestion,
   createOptionQuestion,
+}: {
+  open: boolean;
+  setOpen: any;
+  newElementOrder: number;
+  formId: string;
+  createShortResponseQuestion: any;
+  createOptionQuestion: any;
 }) {
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
-      }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [setOpen]);
   return (
     <div>
       <CommandDialog open={open} onOpenChange={setOpen}>

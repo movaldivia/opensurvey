@@ -1,10 +1,12 @@
 import {
   getQuestionsFromUser,
   getFormFromUser,
-  createShortResponseQuestion,
   deleteQuestion,
 } from "@/lib/actions/actions";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { type Form, type Question, Prisma, type Option } from "@prisma/client";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
@@ -12,9 +14,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MoveLeft } from "lucide-react";
 
+type QuestionWithOptions = Prisma.QuestionGetPayload<{
+  include: { options: true };
+}>;
+
 export default async function Page({ params }: { params: { slug: string } }) {
   const questions = await getQuestionsFromUser(params.slug);
   const form = await getFormFromUser(params.slug);
+
+  if (!form || "error" in form) {
+    notFound();
+  }
+
+  if ("error" in questions) {
+    notFound();
+  }
 
   const title = form.title;
 
@@ -77,7 +91,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
   );
 }
 
-const QuestionRadioGroup = ({ options }) => {
+const QuestionRadioGroup = ({ options }: { options: Option[] }) => {
   return (
     <RadioGroup defaultValue="option-one font-base">
       {options.map((option) => {

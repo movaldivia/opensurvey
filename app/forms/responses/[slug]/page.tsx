@@ -10,15 +10,38 @@ import { MoveLeft } from "lucide-react";
 
 import Link from "next/link";
 
+import { type Form, type Question, Prisma, type Option } from "@prisma/client";
+
 import { getResponsesSummaryFromUser } from "@/lib/actions/actions";
 
 import ResponsePie from "@/components/pie";
 
-function transformData(data) {
-  const questionIdCount = {};
+import { notFound } from "next/navigation";
+
+type QuestionWithOptionsWithAnswer = Prisma.QuestionGetPayload<{
+  include: {
+    answers: {
+      include: {
+        option: true;
+      };
+    };
+  };
+}>;
+
+function transformData(optionsData: (Option | null)[]) {
+  type QuestionIdCount = {
+    [key: string]: {
+      name: string;
+      value: number;
+    };
+  };
+  const questionIdCount: QuestionIdCount = {};
 
   // Count the occurrences of each questionId
-  data.forEach((item) => {
+  optionsData.forEach((item) => {
+    if (item === null) {
+      return;
+    }
     if (!questionIdCount[item.id]) {
       questionIdCount[item.id] = { name: item.optionText, value: 1 };
     } else {
@@ -32,7 +55,7 @@ function transformData(data) {
   return result;
 }
 
-function Question({ question }) {
+function Question({ question }: { question: QuestionWithOptionsWithAnswer }) {
   if (question.type === "SHORT_RESPONSE") {
     return (
       <Card className="col-span-3 mt-8">
@@ -45,7 +68,7 @@ function Question({ question }) {
             {}
             {question.answers.map((answer) => {
               return (
-                <div key={answer.key} className="ml-4 space-y-1">
+                <div key={answer.id} className="ml-4 space-y-1">
                   <p className="text-sm text-muted-foreground">
                     {answer.answerText}
                   </p>
@@ -57,11 +80,11 @@ function Question({ question }) {
       </Card>
     );
   } else if (question.type === "MANY_OPTIONS") {
-    const options = transformData(
-      question.answers.map((answer) => {
-        return answer.option;
-      })
-    );
+    const optionsData = question.answers.map((answer) => {
+      return answer.option;
+    });
+
+    const options = transformData(optionsData);
 
     return (
       <Card className="col-span-3 mt-8">
@@ -74,7 +97,7 @@ function Question({ question }) {
             <ResponsePie data={options} />
             {question.answers.map((answer) => {
               return (
-                <div key={answer.key} className="ml-4 space-y-1">
+                <div key={answer.id} className="ml-4 space-y-1">
                   <p className="text-sm text-muted-foreground">
                     {answer.answerText}
                   </p>
@@ -90,6 +113,11 @@ function Question({ question }) {
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const result = await getResponsesSummaryFromUser(params.slug);
+
+  if ("error" in result) {
+    notFound();
+  }
+
   return (
     <div className="mx-48 my-20">
       <div className="my-10">
@@ -112,7 +140,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         Responses
       </h2>
       {result.map((question) => {
-        return <Question question={question} />;
+        return <Question key={question.id} question={question} />;
       })}
     </div>
   );
