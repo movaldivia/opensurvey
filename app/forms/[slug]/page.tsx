@@ -2,14 +2,17 @@ import QuestionForm from "./form";
 import {
   getQuestionsFromUser,
   getFormFromUser,
-  createQuestion,
   deleteQuestion,
   tooglePublishFormFromUser,
-  createOptionQuestion,
   updateOptionText,
   createOption,
   deleteOption,
-} from "@/lib/actions";
+} from "@/lib/actions/actions";
+
+import {
+  createShortResponseQuestion,
+  createOptionQuestion,
+} from "@/lib/actions/questions/create";
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const questions = await getQuestionsFromUser(params.slug);
@@ -22,7 +25,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           title={form?.title}
           formId={params.slug}
           questions={questions}
-          createQuestion={createQuestion}
+          createShortResponseQuestion={createShortResponseQuestion}
           deleteOption={deleteOption}
           deleteQuestion={deleteQuestion}
           tooglePublishFormFromUser={tooglePublishFormFromUser}

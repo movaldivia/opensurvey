@@ -30,7 +30,7 @@ model User {
 model Form {
   id        String     @id @default(uuid())
   userId    String
-  user      User       @relation(fields: [userId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   title     String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -41,7 +41,7 @@ model Form {
 
 model Question {
   formId      String
-  form        Form     @relation(fields: [formId], references: [id])
+  form        Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
   id          String   @id @default(uuid())
   text        String   @default("")
   placeholder String   @default("")
@@ -84,7 +84,7 @@ model Option {
   updatedAt  DateTime @updatedAt
   questionId String
   optionText String
-  question   Question @relation(fields: [questionId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   order      Int
   answer Answer[]
 }

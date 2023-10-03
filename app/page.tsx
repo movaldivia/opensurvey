@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Github } from "lucide-react";
-import { checkIfUserIsLoggedIn } from "@/lib/actions";
+import { checkIfUserIsLoggedIn } from "@/lib/actions/actions";
 import { Search } from "@/components/dashboard/search";
 import { UserNav } from "@/components/dashboard/user-nav";
 import TeamSwitcher from "@/components/dashboard/team-switcher";

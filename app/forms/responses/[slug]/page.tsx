@@ -10,7 +10,7 @@ import { MoveLeft } from "lucide-react";
 
 import Link from "next/link";
 
-import { getResponsesSummaryFromUser } from "@/lib/actions";
+import { getResponsesSummaryFromUser } from "@/lib/actions/actions";
 
 import ResponsePie from "@/components/pie";
 

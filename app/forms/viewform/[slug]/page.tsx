@@ -1,11 +1,11 @@
 import {
   getQuestionsFromUser,
   getFormFromUser,
-  createQuestion,
+  createShortResponseQuestion,
   deleteQuestion,
   getForm,
   submitForm,
-} from "@/lib/actions";
+} from "@/lib/actions/actions";
 import Link from "next/link";
 
 import Form from "./form";

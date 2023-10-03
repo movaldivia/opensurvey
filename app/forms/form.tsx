@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 
-import { createForm } from "@/lib/actions";
+import { createForm } from "@/lib/actions/actions";
 import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({});

@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Form from "@/app/forms/form";
-import { getFormsFromUser } from "@/lib/actions";
+import { getFormsFromUser } from "@/lib/actions/actions";
 import { DataTable } from "@/components/formsTable/data-table";
 import { columns } from "@/components/formsTable/columns";
 import path from "path";

@@ -1,9 +1,9 @@
 import {
   getQuestionsFromUser,
   getFormFromUser,
-  createQuestion,
+  createShortResponseQuestion,
   deleteQuestion,
-} from "@/lib/actions";
+} from "@/lib/actions/actions";
 import Link from "next/link";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
