@@ -14,9 +14,25 @@ import { getResponsesSummaryFromUser } from "@/lib/actions";
 
 import ResponsePie from "@/components/pie";
 
-function Question({ question }) {
-  console.log({ question });
+function transformData(data) {
+  const questionIdCount = {};
 
+  // Count the occurrences of each questionId
+  data.forEach((item) => {
+    if (!questionIdCount[item.id]) {
+      questionIdCount[item.id] = { name: item.optionText, value: 1 };
+    } else {
+      questionIdCount[item.id].value += 1;
+    }
+  });
+
+  // Convert the object into the desired array format
+  const result = Object.values(questionIdCount);
+
+  return result;
+}
+
+function Question({ question }) {
   if (question.type === "SHORT_RESPONSE") {
     return (
       <Card className="col-span-3 mt-8">
@@ -25,7 +41,7 @@ function Question({ question }) {
           <CardDescription>{`${question.answers.length} responses`}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-8">
+          <div className="space-y-6">
             {}
             {question.answers.map((answer) => {
               return (
@@ -41,6 +57,12 @@ function Question({ question }) {
       </Card>
     );
   } else if (question.type === "MANY_OPTIONS") {
+    const options = transformData(
+      question.answers.map((answer) => {
+        return answer.option;
+      })
+    );
+
     return (
       <Card className="col-span-3 mt-8">
         <CardHeader>
@@ -49,7 +71,7 @@ function Question({ question }) {
         </CardHeader>
         <CardContent>
           <div className="space-y-8">
-            <ResponsePie />
+            <ResponsePie data={options} />
             {question.answers.map((answer) => {
               return (
                 <div key={answer.key} className="ml-4 space-y-1">

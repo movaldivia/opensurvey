@@ -274,6 +274,9 @@ export const getResponsesSummaryFromUser = async (formId: string) => {
         orderBy: {
           createdAt: "desc",
         },
+        include: {
+          option: true,
+        },
       },
     },
     orderBy: {
