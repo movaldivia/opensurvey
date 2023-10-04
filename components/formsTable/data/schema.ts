@@ -5,6 +5,7 @@ export const formSchema = z.object({
   title: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  shortId: z.string(),
 });
 
 export type Form = z.infer<typeof formSchema>;

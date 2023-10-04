@@ -19,6 +19,7 @@ export default async function Forms() {
       ...element,
       createdAt: format(element.createdAt, "dd/MM/yyyy"),
       updatedAt: format(element.updatedAt, "dd/MM/yyyy"),
+      shortId: element.id.substring(0, 8),
     };
   });
 

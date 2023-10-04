@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-import { type Form, type Question, Prisma, type Option } from "@prisma/client";
+import { type Form, Prisma, type Option } from "@prisma/client";
+import { FormTitle } from "@/components/formTitle";
 
 type QuestionWithOptions = Prisma.QuestionGetPayload<{
   include: {
@@ -38,7 +39,7 @@ export default function Form({
 }: {
   questions: QuestionWithOptions[];
   submitForm: any;
-  form: any;
+  form: Form;
 }) {
   const router = useRouter();
   const [answers, setAnswers] = useState(
@@ -62,12 +63,12 @@ export default function Form({
 
   return (
     <div>
-      <div className="mt-12">
+      <div className="mt-16">
         {questions.map((question) => {
           if (question.type === "SHORT_RESPONSE") {
             return (
               <div key={question.id} className="mb-5 group relative">
-                <div className="sm:w-1/2 tracking-tight flex h-9 w-full rounded-md border-0 bg-transparent py-1 text-sm transition-colors leading-7 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                <div className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-wide transition-colors leading-7 [&:not(:first-child)]:mt-0 text-lg mb-2 font-medium  peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                   {question.text}
                 </div>
                 <Input
@@ -92,8 +93,8 @@ export default function Form({
             );
           } else if ("MANY_OPTIONS") {
             return (
-              <div key={question.id}>
-                <div className="sm:w-1/2 tracking-tight flex h-9 w-full rounded-md border-0 bg-transparent py-1 text-sm transition-colors leading-7 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+              <div key={question.id} className="mb-5">
+                <div className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-wide text-lg transition-colors leading-7 [&:not(:first-child)]:mt-0  mb-2 font-medium  peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                   {question.text}
                 </div>
                 <QuestionRadioGroup
@@ -112,7 +113,7 @@ export default function Form({
         <Button
           onClick={async () => {
             await submitForm(answers, form.id);
-            // router.push(`/forms/success/${form.id}`);
+            router.push(`/forms/success/${form.id}`);
           }}
         >
           Submit

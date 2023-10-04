@@ -1,6 +1,5 @@
 "use client";
 
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
 import { useRouter } from "next/navigation";
@@ -17,7 +16,7 @@ interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
-export function DataTableRowActions<TData>({
+export function DataTableRowActions<TData extends { id: string }>({
   row,
 }: DataTableRowActionsProps<TData>) {
   const router = useRouter();
@@ -25,24 +24,19 @@ export function DataTableRowActions<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-        >
-          <Button>Actions</Button>
-        </Button>
+        <Button>Actions</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem
           onClick={() => {
-            router.push(`/forms/${row.getValue("id")}`);
+            router.push(`/forms/${row.original.id}`);
           }}
         >
           Edit
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            router.push(`/forms/responses/${row.getValue("id")}`);
+            router.push(`/forms/responses/${row.original.id}`);
           }}
         >
           Check responses

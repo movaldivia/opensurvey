@@ -369,6 +369,44 @@ export const updateQuestionFromUser = async (
   }
 };
 
+export const getQuestionsFromPublishedForm = async (formId: string) => {
+  const formFromUser = await prisma.form.findFirst({
+    where: {
+      id: formId,
+    },
+  });
+
+  if (!formFromUser) {
+    return {
+      error: "Form does not exist",
+    };
+  }
+
+  if (!formFromUser.published) {
+    return {
+      error: "Form is not published",
+    };
+  }
+
+  const response = await prisma.question.findMany({
+    where: {
+      formId: formFromUser.id,
+    },
+    orderBy: {
+      order: "asc",
+    },
+    include: {
+      options: {
+        orderBy: {
+          order: "asc",
+        },
+      },
+    },
+  });
+
+  return response;
+};
+
 export const getQuestionsFromUser = async (formId: string) => {
   const session = await getSession();
   if (!session?.user.id) {
@@ -411,8 +449,6 @@ export const getQuestionsFromUser = async (formId: string) => {
       },
     },
   });
-
-  revalidatePath(`forms/${formId}`);
 
   return response;
 };

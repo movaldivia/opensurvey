@@ -22,7 +22,6 @@ import { Label } from "@/components/ui/label";
 export function RegisterDialog() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  console.log({ loading });
 
   const [formValues, setFormValues] = useState({
     name: "",
