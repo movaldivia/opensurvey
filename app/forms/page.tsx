@@ -5,7 +5,7 @@ import { columns } from "@/components/formsTable/columns";
 
 import { format } from "date-fns";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function Forms() {
   const formsFromUser = await getFormsFromUser();
@@ -23,7 +23,7 @@ export default async function Forms() {
   });
 
   return (
-    <div className="my-24 mx-24">
+    <div className="mt-32 mx-48">
       <div className="mt-12 mb-8">{<Form></Form>}</div>
       {<DataTable data={formsFromUserFormatted} columns={columns}></DataTable>}
     </div>

@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 export function RegisterDialog() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  console.log({ loading });
 
   const [formValues, setFormValues] = useState({
     name: "",
@@ -34,7 +35,7 @@ export function RegisterDialog() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setFormValues({ name: "", email: "", password: "" });
+    // setFormValues({ name: "", email: "", password: "" });
 
     try {
       const res = await fetch("/api/register", {
@@ -52,7 +53,6 @@ export function RegisterDialog() {
       }
 
       const resSignIn = await signIn("credentials", {
-        // redirect: false,
         email: formValues.email,
         password: formValues.password,
         callbackUrl: "/forms",
@@ -68,32 +68,6 @@ export function RegisterDialog() {
       setError(error);
     }
   };
-
-  //   const login = async (e: React.FormEvent) => {
-  //     e.preventDefault();
-  //     try {
-  //       setLoading(true);
-  //       setFormValues({ email: "", password: "" });
-
-  //       const res = await signIn("credentials", {
-  //         redirect: false,
-  //         email: formValues.email,
-  //         password: formValues.password,
-  //         callbackUrl,
-  //       });
-
-  //       setLoading(false);
-
-  //       if (!res?.error) {
-  //         router.push(callbackUrl);
-  //       } else {
-  //         setError("invalid email or password");
-  //       }
-  //     } catch (error: any) {
-  //       setLoading(false);
-  //       setError(error);
-  //     }
-  //   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -113,26 +87,6 @@ export function RegisterDialog() {
             take a moment to register.
           </DialogDescription>
         </DialogHeader>
-        {/* <div className="grid grid-cols-2 gap-6">
-            <Button variant="outline">
-              <Icons.gitHub className="mr-2 h-4 w-4" />
-              Github
-            </Button>
-            <Button variant="outline">
-              <Icons.google className="mr-2 h-4 w-4" />
-              Google
-            </Button>
-          </div> */}
-        {/* <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div> */}
         <div>
           <form onSubmit={onSubmit} className="py-2">
             {error && (
@@ -173,8 +127,8 @@ export function RegisterDialog() {
               />
             </div>
             <DialogFooter>
-              <Button className="mt-5" type="submit">
-                Register
+              <Button className="mt-5" type="submit" disabled={loading}>
+                {loading ? "Loading..." : "Register"}
               </Button>
             </DialogFooter>
           </form>
