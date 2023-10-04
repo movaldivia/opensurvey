@@ -10,6 +10,8 @@ import { signOut } from "next-auth/react";
 import Logout from "@/components/logout";
 import { RegisterLink } from "@/components/registerLink";
 import { LoginLink } from "@/components/loginLink";
+import { GitHubLogoIcon, ArrowRightIcon } from "@radix-ui/react-icons";
+import { Badge } from "@/components/ui/badge";
 
 export default async function Home() {
   const isUserLogged = await checkIfUserIsLoggedIn();
@@ -17,13 +19,23 @@ export default async function Home() {
     <div>
       <div className="border-b">
         <div className="flex h-16 items-center px-32">
-          {/* <TeamSwitcher /> */}
-          {/* <div className="text-slate-600 mr-1 cursor-pointer">
-            <FormInput></FormInput>
-          </div> */}
-          <h4 className="font-bold tracking-tight cursor-pointer">
-            OpenSurvey
-          </h4>
+          <div className="flex items-baseline cursor-pointer px-1">
+            {/* <span className="">
+              <ChatBubbleIcon
+                color="#000000"
+                className="h-4 w-4 cursor-pointer"
+              />
+            </span> */}
+            <h4 className="font-semibold tracking-tight cursor-pointer ml-1">
+              Opensurvey
+            </h4>
+            <div className="ml-8 text-sm font-medium transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer">
+              <Link href={"https://github.com/movaldivia/opensurvey"}>
+                Documentation
+              </Link>
+            </div>
+          </div>
+
           {/* <MainNav className="mx-6" /> */}
           <div className="ml-auto flex items-center space-x-6 text-sm font-medium">
             {/* <Search />
@@ -33,24 +45,31 @@ export default async function Home() {
             {isUserLogged && <Logout />}
 
             <div className="flex items-center">
-              <span className="text-slate-700 text-sm cursor-pointer mr-2">
-                Give us a star
-              </span>
-              <Github
-                className="cursor-pointer"
-                color="#000000"
-                strokeWidth={1.75}
-                absoluteStrokeWidth
-                size={18}
-                fill="true"
-              />
+              <Button variant="outline">
+                <GitHubLogoIcon className="h-4 w-4" />
+                <span className="ml-2 text-xs">STAR US</span>
+              </Button>
             </div>
           </div>
         </div>
       </div>
-      <section className="mt-12 px-32">
+      <section className="mt-20 px-32">
         <div className="">
-          <h1 className="text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
+          <div>
+            <Link href={"https://github.com/movaldivia/opensurvey"}>
+              <Badge className="py-1 px-2 cursor-pointer" variant="secondary">
+                <div className="text-sm font-normal flex items-center">
+                  <div>🎉</div>
+                  <div className="text-slate-300 px-2">|</div>
+                  <div>We are in Open Beta.</div>
+                  <div>
+                    <ArrowRightIcon className="h-4 w-4 ml-2" />
+                  </div>
+                </div>
+              </Badge>
+            </Link>
+          </div>
+          <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
             The open source alternative
           </h1>
           <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
@@ -58,8 +77,9 @@ export default async function Home() {
           </h1>
         </div>
         <div className="mt-4">
-          <div className="max-w-[750px] text-lg text-muted-foreground sm:text-xl">
-            Publish your form in less than 5 minutes.
+          <div className="max-w-[600px] font-light text-xl text-muted-foreground sm:text-xl">
+            Simple form builder. Publish your form in less than 5 minutes.
+            Accessible. Customizable. Open Source.
           </div>
         </div>
         <div className="mt-4 flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
@@ -70,8 +90,12 @@ export default async function Home() {
           ) : (
             <RegisterDialog></RegisterDialog>
           )}
-
-          <Button variant="secondary">GitHub</Button>
+          <Link href={"https://github.com/movaldivia/opensurvey"}>
+            <Button variant="outline">
+              <GitHubLogoIcon className="h-4 w-4" />
+              <span className="ml-2">GitHub</span>
+            </Button>
+          </Link>
         </div>
       </section>
       {/* <div className="px-32 mt-8">

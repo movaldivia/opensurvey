@@ -47,7 +47,7 @@ const renderCustomizedLabel = ({
   index,
 }: CustomizedLabelProps) => {
   // Adjust this threshold as needed
-  const MIN_PERCENT_FOR_LABEL = 0.2; // 5%
+  const MIN_PERCENT_FOR_LABEL = 0.2;
 
   if (percent < MIN_PERCENT_FOR_LABEL) return null;
 
@@ -62,6 +62,8 @@ const renderCustomizedLabel = ({
       fill="white"
       textAnchor={x > cx ? "start" : "end"}
       dominantBaseline="central"
+      fontSize={14}
+      fontWeight={300}
     >
       {`${(percent * 100).toFixed(0)}%`}
     </text>
