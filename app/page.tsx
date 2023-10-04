@@ -45,10 +45,12 @@ export default async function Home() {
             {isUserLogged && <Logout />}
 
             <div className="flex items-center">
-              <Button variant="outline">
-                <GitHubLogoIcon className="h-4 w-4" />
-                <span className="ml-2 text-xs">STAR US</span>
-              </Button>
+              <Link href={"https://github.com/movaldivia/opensurvey"}>
+                <Button variant="outline">
+                  <GitHubLogoIcon className="h-4 w-4" />
+                  <span className="ml-2 text-xs">STAR US</span>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
