@@ -25,8 +25,8 @@ import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
 
-// import EditableDiv from "@/components/ui/editable-div";
-import EditableDiv from "@/components/ui/basic-text-input";
+import EditableFormTitle from "@/components/editable-form-title";
+import EditableQuestionText from "@/components/editable-question-text";
 
 type QuestionWithOptions = Prisma.QuestionGetPayload<{
   include: { options: true };
@@ -57,9 +57,12 @@ export default function QuestionForm({
   const { toast } = useToast();
   const router = useRouter();
 
-  const debounced = useDebouncedCallback((questionId, placeholder, text) => {
-    updateQuestionFromUser(formId, questionId, placeholder, text);
-  }, 500);
+  const questionTextAndPlaceholderDebounced = useDebouncedCallback(
+    (questionId, placeholder, text) => {
+      updateQuestionFromUser(formId, questionId, placeholder, text);
+    },
+    500
+  );
 
   const formTitleDebounced = useDebouncedCallback(
     (formId: string, title: string) => {
@@ -100,18 +103,11 @@ export default function QuestionForm({
       </div>
       <div className="md:px-20 md:mt-20">
         <div className="">
-          <EditableDiv
+          <EditableFormTitle
             value={title}
             formTitleDebounced={formTitleDebounced}
             formId={formId}
           />
-          {/* <Input
-            placeholder="Type form title"
-            defaultValue={title}
-            type="textarea"
-            className="break-words block border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20  first:mt-0 text-5xl font-semibold tracking-tight transition-colors h-14"
-            onChange={(e) => formTitleDebounced(formId, e.target.value)}
-          /> */}
           <div className="mt-4">
             <Button
               type="button"
@@ -183,26 +179,28 @@ export default function QuestionForm({
           </div>
 
           <div className="mt-12">
-            {questions.map((element) => {
-              if (element.type === "SHORT_RESPONSE") {
+            {questions.map((question) => {
+              if (question.type === "SHORT_RESPONSE") {
                 return (
-                  <div key={element.id} className="mb-5 group relative">
-                    <Input
-                      defaultValue={element.text}
-                      key={element.id + "2"}
-                      placeholder="Type a question"
-                      className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20  transition-colors leading-7 [&:not(:first-child)]:mt-0 font-medium tracking-wide text-lg  peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      onChange={(e) =>
-                        debounced(element.id, null, e.target.value)
+                  <div key={question.id} className="mb-5 group relative">
+                    <EditableQuestionText
+                      value={question.text}
+                      questionTextAndPlaceholderDebounced={
+                        questionTextAndPlaceholderDebounced
                       }
+                      questionId={question.id}
                     />
                     <Input
-                      defaultValue={element.placeholder}
+                      defaultValue={question.placeholder}
                       placeholder="Type a placeholder for the response (optional)"
-                      key={element.id + "1"}
+                      key={question.id + "1"}
                       className="sm:w-1/2 leading-7 [&:not(:first-child)]:mt-0 text-muted-foreground "
                       onChange={(e) =>
-                        debounced(element.id, e.target.value, null)
+                        questionTextAndPlaceholderDebounced(
+                          question.id,
+                          e.target.value,
+                          null
+                        )
                       }
                     />
                     <div className=" absolute top-2 left-0 transform -translate-x-full  hidden group-hover:inline-flex">
@@ -211,7 +209,7 @@ export default function QuestionForm({
                           <Plus
                             className=" text-gray-700"
                             onClick={async () => {
-                              setNewElementOrder(element.order + 1);
+                              setNewElementOrder(question.order + 1);
                               setOpenQuestionCommand(true);
 
                               // await createShortResponseQuestion(formId, element.order + 1);
@@ -222,7 +220,7 @@ export default function QuestionForm({
                           <Trash2
                             className=" mt-1 text-gray-700 "
                             onClick={async () => {
-                              await deleteQuestion(formId, element.id);
+                              await deleteQuestion(formId, question.id);
                             }}
                           />
                         </div>
@@ -231,22 +229,20 @@ export default function QuestionForm({
                   </div>
                 );
               }
-              if (element.type === "MANY_OPTIONS") {
+              if (question.type === "MANY_OPTIONS") {
                 return (
-                  <div key={element.id} className="mb-5 group relative">
-                    <Input
-                      defaultValue={element.text}
-                      key={element.id + "2"}
-                      placeholder="Type a question"
-                      className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 transition-colors leading-7 [&:not(:first-child)]:mt-0 font-medium  peer-disabled:cursor-not-allowed peer-disabled:opacity-70 tracking-wide text-lg"
-                      onChange={(e) =>
-                        debounced(element.id, null, e.target.value)
+                  <div key={question.id} className="mb-5 group relative">
+                    <EditableQuestionText
+                      value={question.text}
+                      questionTextAndPlaceholderDebounced={
+                        questionTextAndPlaceholderDebounced
                       }
+                      questionId={question.id}
                     />
                     <QuestionRadioGroup
-                      options={element.options}
+                      options={question.options}
                       formId={formId}
-                      questionId={element.id}
+                      questionId={question.id}
                       createOption={createOption}
                       deleteOption={deleteOption}
                     />
@@ -257,7 +253,7 @@ export default function QuestionForm({
                             size={24}
                             className=" text-gray-700"
                             onClick={async () => {
-                              setNewElementOrder(element.order + 1);
+                              setNewElementOrder(question.order + 1);
                               setOpenQuestionCommand(true);
                               // await createShortResponseQuestion(
                               //   formId,
@@ -271,7 +267,7 @@ export default function QuestionForm({
                             size={22}
                             className=" mt-1 text-gray-700 "
                             onClick={async () => {
-                              await deleteQuestion(formId, element.id);
+                              await deleteQuestion(formId, question.id);
                             }}
                           />
                         </div>

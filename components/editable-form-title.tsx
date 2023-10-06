@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import DOMPurify from "dompurify";
 
-function EditableDiv({
+function EditableFormTitle({
   value: initialValue,
   formTitleDebounced,
   formId,
@@ -30,7 +30,7 @@ function EditableDiv({
         !value
           ? "before:content-['Type_form_title'] text-muted-foreground "
           : ""
-      }break-words focus:outline-none text-5xl font-semibold tracking-tight transition-colors`}
+      }cursor-text break-words focus:outline-none text-5xl font-semibold tracking-tight transition-colors`}
       onInput={handleInput}
     >
       {initialValue}
@@ -38,4 +38,4 @@ function EditableDiv({
   );
 }
 
-export default EditableDiv;
+export default EditableFormTitle;

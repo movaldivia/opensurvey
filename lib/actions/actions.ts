@@ -337,7 +337,6 @@ export const updateQuestionFromUser = async (
         placeholder,
       },
     });
-    revalidatePath(`forms/${formId}`);
     return response;
   } else if (text != null) {
     const response = await prisma.question.update({
@@ -350,7 +349,6 @@ export const updateQuestionFromUser = async (
         text,
       },
     });
-    revalidatePath(`forms/${formId}`);
     return response;
   } else if (placeholder != null) {
     const response = await prisma.question.update({
@@ -363,7 +361,6 @@ export const updateQuestionFromUser = async (
         placeholder,
       },
     });
-    revalidatePath(`forms/${formId}`);
     return response;
   }
 };
