@@ -8,6 +8,8 @@ import { type Form, type Question, Prisma, type Option } from "@prisma/client";
 import { useRef, useEffect, useState } from "react";
 import { QuestionCommand } from "@/components/command";
 
+import { DotsVerticalIcon } from "@radix-ui/react-icons";
+
 import { useToast } from "@/components/ui/use-toast";
 import {
   updateQuestionFromUser,
@@ -61,19 +63,21 @@ export default function QuestionForm({
     (questionId, placeholder, text) => {
       updateQuestionFromUser(formId, questionId, placeholder, text);
     },
-    500
+    300
   );
 
   const formTitleDebounced = useDebouncedCallback(
     (formId: string, title: string) => {
       updateFormFromUser(formId, title);
     },
-    500
+    300
   );
 
   const [openQuestionCommand, setOpenQuestionCommand] = useState(false);
 
   const [newElementOrder, setNewElementOrder] = useState(questions.length + 1);
+
+  const [commandQuestionId, setCommandQuestionId] = useState("");
 
   return (
     <div className="mx-auto	my-6 md:mt-16 sm:my-24 w-full max-w-xs sm:max-w-4xl">
@@ -85,6 +89,8 @@ export default function QuestionForm({
           formId={formId}
           createShortResponseQuestion={createShortResponseQuestion}
           createOptionQuestion={createOptionQuestion}
+          deleteQuestion={deleteQuestion}
+          commandQuestionId={commandQuestionId}
         />
         <Link href={`/forms`}>
           <div className="flex items-center">
@@ -116,6 +122,7 @@ export default function QuestionForm({
               className="mt-2"
               onClick={async () => {
                 setNewElementOrder(questions.length + 1);
+                setCommandQuestionId("");
                 setOpenQuestionCommand(true);
               }}
             >
@@ -156,9 +163,6 @@ export default function QuestionForm({
                     toast({
                       title: "Link successfully copied",
                     });
-                    // toast({
-                    //   description: "Your message has been sent.",
-                    // });
                   }}
                 >
                   Copy Link
@@ -203,7 +207,19 @@ export default function QuestionForm({
                         )
                       }
                     />
-                    <div className=" absolute top-2 left-0 transform -translate-x-full  hidden group-hover:inline-flex">
+                    <div className="absolute top-0 left-0 transform -translate-x-full flex md:hidden items-center">
+                      <div className="mt-2 mr-1 flex">
+                        <DotsVerticalIcon
+                          className="h-4 w-4"
+                          onClick={() => {
+                            setNewElementOrder(question.order + 1);
+                            setCommandQuestionId(question.id);
+                            setOpenQuestionCommand(true);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className=" absolute top-2 left-0 transform -translate-x-full  hidden md:group-hover:inline-flex">
                       <div className="mr-6">
                         <div className="px-2 hover:cursor-pointer">
                           <Plus
@@ -246,8 +262,20 @@ export default function QuestionForm({
                       createOption={createOption}
                       deleteOption={deleteOption}
                     />
-                    <div className=" absolute top-0 left-0 transform -translate-x-full  hidden group-hover:inline-flex">
-                      <div className="mr-4 flex items-center">
+                    <div className="absolute top-0 left-0 transform -translate-x-full flex md:hidden items-center">
+                      <div className="mt-2 mr-1 flex">
+                        <DotsVerticalIcon
+                          className="h-4 w-4"
+                          onClick={() => {
+                            setNewElementOrder(question.order + 1);
+                            setCommandQuestionId(question.id);
+                            setOpenQuestionCommand(true);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className=" absolute top-0 left-0 transform -translate-x-full  hidden md:group-hover:inline-flex">
+                      <div className="mr-4 items-center hidden md:flex">
                         <div className="hover:cursor-pointer">
                           <Plus
                             size={24}
@@ -255,10 +283,6 @@ export default function QuestionForm({
                             onClick={async () => {
                               setNewElementOrder(question.order + 1);
                               setOpenQuestionCommand(true);
-                              // await createShortResponseQuestion(
-                              //   formId,
-                              //   element.order + 1
-                              // );
                             }}
                           />
                         </div>
@@ -350,23 +374,11 @@ const QuestionRadioGroup = ({
             />
             <div className=" absolute top-2 left-0 transform -translate-x-full  hidden group-hover:inline-flex">
               <div className="mr-4">
-                {/* <div className="px-2 hover:cursor-pointer">
-                  <Plus
-                    size={16}
-                    className=" text-gray-700"
-                    onClick={async () => {
-                      // await createShortResponseQuestion(formId, element.order + 1);
-                    }}
-                  />
-                </div> */}
-                <div className="px-2 hover:cursor-pointer">
+                <div className="md:px-2 hover:cursor-pointer">
                   <Trash2
                     size={20}
                     className=" text-gray-700 "
                     onClick={async () => {
-                      // questionId: string,
-                      // optionId: string,
-                      // formId: string
                       await deleteOption(questionId, option.id, formId);
                     }}
                   />
