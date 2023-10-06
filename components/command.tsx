@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircledIcon, PauseIcon } from "@radix-ui/react-icons";
+import { Plus, Trash2 } from "lucide-react";
 
 import {
   CommandEmpty,
@@ -18,6 +19,8 @@ export function QuestionCommand({
   formId,
   createShortResponseQuestion,
   createOptionQuestion,
+  deleteQuestion,
+  commandQuestionId,
 }: {
   open: boolean;
   setOpen: any;
@@ -25,6 +28,8 @@ export function QuestionCommand({
   formId: string;
   createShortResponseQuestion: any;
   createOptionQuestion: any;
+  deleteQuestion: any;
+  commandQuestionId: string;
 }) {
   return (
     <div>
@@ -53,6 +58,18 @@ export function QuestionCommand({
               <CheckCircledIcon className="mr-2 h-4 w-4" />
               <span>Add multiple options question</span>
             </CommandItem>
+            {commandQuestionId ? (
+              <CommandItem
+                className="md:hidden cursor-pointer"
+                onSelect={async () => {
+                  await deleteQuestion(formId, commandQuestionId);
+                  setOpen(false);
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>Remove question</span>
+              </CommandItem>
+            ) : null}
           </CommandGroup>
         </CommandList>
       </CommandDialog>
