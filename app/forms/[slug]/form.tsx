@@ -25,6 +25,9 @@ import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
 
+// import EditableDiv from "@/components/ui/editable-div";
+import EditableDiv from "@/components/ui/basic-text-input";
+
 type QuestionWithOptions = Prisma.QuestionGetPayload<{
   include: { options: true };
 }>;
@@ -54,21 +57,14 @@ export default function QuestionForm({
   const { toast } = useToast();
   const router = useRouter();
 
-  const debounced = useDebouncedCallback(
-    // function
-    (questionId, placeholder, text) => {
-      updateQuestionFromUser(formId, questionId, placeholder, text);
-    },
-    // delay in ms
-    500
-  );
+  const debounced = useDebouncedCallback((questionId, placeholder, text) => {
+    updateQuestionFromUser(formId, questionId, placeholder, text);
+  }, 500);
 
   const formTitleDebounced = useDebouncedCallback(
-    // function
     (formId: string, title: string) => {
       updateFormFromUser(formId, title);
     },
-    // delay in ms
     500
   );
 
@@ -76,10 +72,8 @@ export default function QuestionForm({
 
   const [newElementOrder, setNewElementOrder] = useState(questions.length + 1);
 
-  // const [createFunction, setCreateFunction] = useState(null);
-
   return (
-    <div className="mx-auto	my-6 mt-16 sm:my-24 w-full max-w-xs sm:max-w-4xl">
+    <div className="mx-auto	my-6 md:mt-16 sm:my-24 w-full max-w-xs sm:max-w-4xl">
       <div className="my-10">
         <QuestionCommand
           setOpen={setOpenQuestionCommand}
@@ -104,14 +98,20 @@ export default function QuestionForm({
           </div>
         </Link>
       </div>
-      <div className="px-20 mt-20">
+      <div className="md:px-20 md:mt-20">
         <div className="">
-          <Input
+          <EditableDiv
+            value={title}
+            formTitleDebounced={formTitleDebounced}
+            formId={formId}
+          />
+          {/* <Input
             placeholder="Type form title"
             defaultValue={title}
-            className="border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20  first:mt-0 text-5xl font-semibold tracking-tight transition-colors h-14"
+            type="textarea"
+            className="break-words block border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20  first:mt-0 text-5xl font-semibold tracking-tight transition-colors h-14"
             onChange={(e) => formTitleDebounced(formId, e.target.value)}
-          />
+          /> */}
           <div className="mt-4">
             <Button
               type="button"

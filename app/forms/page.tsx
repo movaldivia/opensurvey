@@ -24,7 +24,7 @@ export default async function Forms() {
   });
 
   return (
-    <div className="mt-32 mx-48">
+    <div className=" px-4 mt-10 md:mt-32 md:mx-48">
       <div className="mt-12 mb-8">{<Form></Form>}</div>
       {<DataTable data={formsFromUserFormatted} columns={columns}></DataTable>}
     </div>

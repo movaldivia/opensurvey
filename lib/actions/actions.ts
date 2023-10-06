@@ -253,7 +253,6 @@ export const updateFormFromUser = async (formId: string, title: string) => {
       title,
     },
   });
-  revalidatePath(`forms/${formId}`);
   return response;
 };
 
