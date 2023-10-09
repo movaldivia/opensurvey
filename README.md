@@ -9,7 +9,9 @@ The ultimate service for creating multiple forms in record time
 <br>
 <br>
 
-<img width="762" alt="notification-center-912bb96e009fb3a69bafec23bcde00b0" src="public/home-image.png">
+<div align="center">
+<img width="762" alt="notification-center-912bb96e009fb3a69bafec23bcde00b0" src="public/home-image.png" height="663">
+</div>
 
 ## Demo
 
