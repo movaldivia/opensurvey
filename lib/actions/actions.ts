@@ -4,6 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
+
+type AnswersWithQuestionOptionAndResponse = Prisma.AnswerGetPayload<{
+  include: { question: true; option: true; response: true };
+}>;
 
 export const deleteOption = async (
   questionId: string,
@@ -267,6 +272,7 @@ export const getResponsesSummaryFromUser = async (formId: string) => {
   const questions = await prisma.question.findMany({
     where: {
       formId: formId,
+      userId: session.user.id,
     },
     include: {
       answers: {
@@ -283,6 +289,84 @@ export const getResponsesSummaryFromUser = async (formId: string) => {
     },
   });
   return questions;
+};
+
+export const getResponsesFromForm = async (formId: string) => {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return {
+      error: "Not authenticated",
+    };
+  }
+
+  const answers = await prisma.answer.findMany({
+    where: {
+      formId: formId,
+      question: {
+        userId: session.user.id,
+      },
+    },
+    include: {
+      question: true,
+      option: true,
+      response: true,
+    },
+  });
+
+  const questions = await prisma.question.findMany({
+    where: {
+      formId: formId,
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
+
+  const questionsNames = questions.map((question) => {
+    return question.text;
+  });
+
+  const totalQuestions = questions.length;
+
+  type GroupedResponses = {
+    [key: string]: AnswersWithQuestionOptionAndResponse[];
+  };
+
+  const groupedByResponse: GroupedResponses = answers.reduce(
+    (acc: GroupedResponses, answer: AnswersWithQuestionOptionAndResponse) => {
+      const responseId = answer.responseId;
+      if (!acc[responseId]) {
+        acc[responseId] = [];
+      }
+      acc[responseId].push(answer);
+      return acc;
+    },
+    {}
+  );
+
+  const formattedResponses: string[][] = Object.values(groupedByResponse).map(
+    (answersForResponse: AnswersWithQuestionOptionAndResponse[]) => {
+      const sortedAnswers = answersForResponse.sort(
+        (a, b) => a.question.order - b.question.order
+      );
+
+      const answersArray: string[] = new Array(totalQuestions).fill("");
+
+      sortedAnswers.forEach((answer) => {
+        const index = answer.question.order - 1;
+        answersArray[index] =
+          answer.question.type === "MANY_OPTIONS"
+            ? answer.option
+              ? answer.option.optionText
+              : ""
+            : answer.answerText;
+      });
+
+      return answersArray;
+    }
+  );
+
+  return [questionsNames].concat(formattedResponses);
 };
 
 export const tooglePublishFormFromUser = async (formId: string) => {

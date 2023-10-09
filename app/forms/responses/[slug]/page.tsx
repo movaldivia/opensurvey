@@ -12,11 +12,16 @@ import Link from "next/link";
 
 import { type Form, type Question, Prisma, type Option } from "@prisma/client";
 
-import { getResponsesSummaryFromUser } from "@/lib/actions/actions";
+import {
+  getResponsesSummaryFromUser,
+  getResponsesFromForm,
+} from "@/lib/actions/actions";
 
 import ResponsePie from "@/components/pie";
 
 import { notFound } from "next/navigation";
+
+import { ExportToExcelButton } from "./export-excel-button";
 
 type QuestionWithOptionsWithAnswer = Prisma.QuestionGetPayload<{
   include: {
@@ -112,7 +117,13 @@ function Question({ question }: { question: QuestionWithOptionsWithAnswer }) {
 }
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  const result = await getResponsesSummaryFromUser(params.slug);
+  const formId = params.slug;
+  const result = await getResponsesSummaryFromUser(formId);
+  const processedData = await getResponsesFromForm(formId);
+
+  if (processedData === null || "error" in processedData) {
+    notFound();
+  }
 
   if ("error" in result) {
     notFound();
@@ -139,6 +150,9 @@ export default async function Page({ params }: { params: { slug: string } }) {
       <h2 className=" border-b pb-2 text-3xl font-semibold tracking-tight transition-colors">
         Responses
       </h2>
+      <div className="mt-6">
+        <ExportToExcelButton processedData={processedData} />
+      </div>
       {result.map((question) => {
         return <Question key={question.id} question={question} />;
       })}
