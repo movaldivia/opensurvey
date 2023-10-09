@@ -22,6 +22,15 @@ export function MainNav({ isUserLogged }: { isUserLogged: boolean }) {
                 Documentation
               </Link>
             </div>
+            <div className="ml-8 text-sm font-medium transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer">
+              <Link
+                href={
+                  "https://opensurvey.vercel.app/forms/viewform/f7cad0e9-89b3-4599-b02d-15c695fd546e"
+                }
+              >
+                Demo
+              </Link>
+            </div>
           </div>
           <div className="ml-auto flex items-center space-x-6 text-sm font-medium">
             {!isUserLogged && <LoginLink />}
