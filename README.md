@@ -26,8 +26,23 @@ OpenSurvey, the open-source alternative to Google Docs and Typeform empowers use
 ## ☁️ Self Host
 
 Currently I'm hosting the demo in Vercel for hosting the Nextjs App and Supabase for the PostgreSQL database.
-I decided to use this platsforms because both give a nice free trial plans. So everyone can host their own
-opensurvey free.
+I decided to use this platsforms because both give free trial plans. So everyone can host their own
+opensurvey for free 🤑.
+
+In vercel I got 4 enviroments variables
+
+For the first two check this guide: [Supabase guide to connect prisma](https://supabase.com/partners/integrations/prisma)
+
+Actually, we use DATABASE_URL and DIRECT_URL because Vercel use serverless. But you can adapt the code to just use DATABASE_URL if you host nextjs in a not serverless enviroment like [Render](https://render.com/). For more info check [Prisma Docs](https://www.prisma.io/docs/concepts/database-connectors/postgresql)
+
+For more info about the nextauth enviroments check [NextAuth Docs](https://next-auth.js.org/configuration/options)
+
+- DATABASE_URL
+- DIRECT_URL
+- NEXTAUTH_URL: opensurvey.vercel.app
+- NEXTAUTH_SECRET: very-secret-password
+
+I will try to create a docker image in the future 🙂
 
 ## 🚀 Have a feature request?
 
