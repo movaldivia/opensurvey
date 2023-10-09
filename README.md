@@ -6,6 +6,11 @@
 The ultimate service for creating multiple forms in record time
 </div>
 
+<br>
+<br>
+
+![Alt text](public/home-image.png)
+
 ## Demo
 
 [OpenSurvey Demo](https://opensurvey.vercel.app/)
