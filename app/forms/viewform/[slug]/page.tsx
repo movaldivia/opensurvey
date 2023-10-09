@@ -7,6 +7,7 @@ import {
 import Form from "./form";
 import { notFound } from "next/navigation";
 import { FormTitle } from "@/components/formTitle";
+import { FormContainer } from "@/components/form-container";
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const questions = await getQuestionsFromPublishedForm(params.slug);
@@ -20,12 +21,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const title = form.title;
 
   return (
-    <div className="mx-auto	my-6 mt-16 sm:my-24 w-full max-w-xs sm:max-w-4xl">
-      <div className="px-20 mt-20">
+    <FormContainer>
+      <div className="mt-20 md:mt-0">
         <FormTitle title={title} />
-
         <Form questions={questions} form={form} submitForm={submitForm}></Form>
       </div>
-    </div>
+    </FormContainer>
   );
 }

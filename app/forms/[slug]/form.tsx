@@ -3,6 +3,8 @@
 import { useDebouncedCallback } from "use-debounce";
 import { Plus, Trash2 } from "lucide-react";
 
+import { FormContainer } from "@/components/form-container";
+
 import { type Form, type Question, Prisma, type Option } from "@prisma/client";
 
 import { useRef, useEffect, useState } from "react";
@@ -80,7 +82,7 @@ export default function QuestionForm({
   const [commandQuestionId, setCommandQuestionId] = useState("");
 
   return (
-    <div className="mx-auto	my-6 md:mt-16 sm:my-24 w-full max-w-xs sm:max-w-4xl">
+    <div className="">
       <div className="my-10">
         <QuestionCommand
           setOpen={setOpenQuestionCommand}
@@ -107,7 +109,7 @@ export default function QuestionForm({
           </div>
         </Link>
       </div>
-      <div className="md:px-20 md:mt-20">
+      <FormContainer>
         <div className="">
           <EditableFormTitle
             value={title}
@@ -303,7 +305,7 @@ export default function QuestionForm({
             })}
           </div>
         </div>
-      </div>
+      </FormContainer>
     </div>
   );
 }

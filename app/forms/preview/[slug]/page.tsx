@@ -6,6 +6,8 @@ import { type Option } from "@prisma/client";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
+import { FormContainer } from "@/components/form-container";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MoveLeft } from "lucide-react";
@@ -45,7 +47,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         </Link>
       </div>
 
-      <div className="px-20 mt-20">
+      <FormContainer>
         <FormTitle title={title} />
         <div className="mt-12">
           {questions.map((question) => {
@@ -81,7 +83,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         <div className="mt-16">
           <Button>Submit</Button>
         </div>
-      </div>
+      </FormContainer>
     </div>
   );
 }
