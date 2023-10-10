@@ -163,7 +163,7 @@ export default function QuestionForm({
                   className="mt-8"
                   onClick={async () => {
                     await navigator.clipboard.writeText(
-                      `http://localhost:3000/forms/viewform/${formId}`
+                      `${host}/forms/viewform/${formId}`
                     );
 
                     toast({
