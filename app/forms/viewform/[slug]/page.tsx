@@ -1,7 +1,7 @@
 import {
   getForm,
   submitForm,
-  getQuestionsFromPublishedForm,
+  getQuestionsFromPublishedFormOrFromAuthor,
 } from "@/lib/actions/actions";
 
 import Form from "./form";
@@ -10,7 +10,9 @@ import { FormTitle } from "@/components/formTitle";
 import { FormContainer } from "@/components/form-container";
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  const questions = await getQuestionsFromPublishedForm(params.slug);
+  const questions = await getQuestionsFromPublishedFormOrFromAuthor(
+    params.slug
+  );
 
   if (!questions || "error" in questions) {
     notFound();

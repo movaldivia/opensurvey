@@ -449,20 +449,30 @@ export const updateQuestionFromUser = async (
   }
 };
 
-export const getQuestionsFromPublishedForm = async (formId: string) => {
-  const formFromUser = await prisma.form.findFirst({
+export const getQuestionsFromPublishedFormOrFromAuthor = async (
+  formId: string
+) => {
+  const session = await getSession();
+
+  let isTheAuthor = false;
+
+  const form = await prisma.form.findFirst({
     where: {
       id: formId,
     },
   });
 
-  if (!formFromUser) {
+  if (!form) {
     return {
       error: "Form does not exist",
     };
   }
 
-  if (!formFromUser.published) {
+  if (form.userId === session?.user.id) {
+    isTheAuthor = true;
+  }
+
+  if (!isTheAuthor && !form.published) {
     return {
       error: "Form is not published",
     };
@@ -470,7 +480,7 @@ export const getQuestionsFromPublishedForm = async (formId: string) => {
 
   const response = await prisma.question.findMany({
     where: {
-      formId: formFromUser.id,
+      formId: form.id,
     },
     orderBy: {
       order: "asc",

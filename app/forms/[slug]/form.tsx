@@ -130,17 +130,17 @@ export default function QuestionForm({
             >
               Add Question
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-2 ml-8"
-              onClick={() => {
-                router.push(`/forms/preview/${formId}`);
-              }}
-            >
-              Preview
-            </Button>
+            <Link href={`/forms/viewform/${formId}`} target="_blank">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2 ml-8"
+              >
+                Preview
+              </Button>
+            </Link>
+
             <Button
               type="button"
               size="sm"

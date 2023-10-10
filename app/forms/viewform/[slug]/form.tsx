@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { type Form, Prisma, type Option } from "@prisma/client";
-import { FormTitle } from "@/components/formTitle";
 
 type QuestionWithOptions = Prisma.QuestionGetPayload<{
   include: {
