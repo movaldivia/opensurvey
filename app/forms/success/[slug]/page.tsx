@@ -2,7 +2,7 @@ import { RocketIcon } from "@radix-ui/react-icons";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-import { getForm } from "@/lib/actions/actions";
+import { getFormIfPublishedOrIsAuthor } from "@/lib/actions/actions";
 
 import Link from "next/link";
 
@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/button";
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const formId = params.slug;
-  const form = await getForm(formId);
+  const form = await getFormIfPublishedOrIsAuthor(formId);
 
   const title = form.title;
   return (
     <div className="mx-4 mt-12 md:mx-32 xl:mx-96 xl:mt-24">
-      <h2 className="mb-10 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors">
+      <h2 className="mb-10 border-b pb-2 text-5xl font-semibold tracking-tight transition-colors">
         {title}
       </h2>
       <Alert>

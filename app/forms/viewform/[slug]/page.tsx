@@ -1,5 +1,5 @@
 import {
-  getForm,
+  getFormIfPublishedOrIsAuthor,
   submitForm,
   getQuestionsFromPublishedFormOrFromAuthor,
 } from "@/lib/actions/actions";
@@ -10,15 +10,15 @@ import { FormTitle } from "@/components/formTitle";
 import { FormContainer } from "@/components/form-container";
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  const questions = await getQuestionsFromPublishedFormOrFromAuthor(
-    params.slug
-  );
+  const formId = params.slug;
+
+  const questions = await getQuestionsFromPublishedFormOrFromAuthor(formId);
 
   if (!questions || "error" in questions) {
     notFound();
   }
 
-  const form = await getForm(params.slug);
+  const form = await getFormIfPublishedOrIsAuthor(params.slug);
 
   const title = form.title;
 
@@ -26,7 +26,11 @@ export default async function Page({ params }: { params: { slug: string } }) {
     <FormContainer>
       <div className="mt-20 md:mt-0">
         <FormTitle title={title} />
-        <Form questions={questions} form={form} submitForm={submitForm}></Form>
+        <Form
+          questions={questions}
+          formId={formId}
+          submitForm={submitForm}
+        ></Form>
       </div>
     </FormContainer>
   );

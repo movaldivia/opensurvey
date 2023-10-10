@@ -659,20 +659,28 @@ export const getFormFromUser = async (formId: string) => {
   return response;
 };
 
-export const getForm = async (formId: string) => {
-  const response = await prisma.form.findFirst({
+export const getFormIfPublishedOrIsAuthor = async (formId: string) => {
+  const session = await getSession();
+
+  let isTheAuthor = false;
+
+  const form = await prisma.form.findFirst({
     where: {
       id: formId,
     },
   });
 
-  if (!response) {
+  if (!form) {
     redirect("/forms/e");
   }
 
-  if (!response.published) {
+  if (form.userId === session?.user.id) {
+    isTheAuthor = true;
+  }
+
+  if (!isTheAuthor && !form.published) {
     redirect("/forms/e");
   }
 
-  return response;
+  return form;
 };
