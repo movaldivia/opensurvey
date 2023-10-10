@@ -46,6 +46,7 @@ export default function QuestionForm({
   updateOptionText,
   createOption,
   deleteOption,
+  host,
 }: {
   questions: QuestionWithOptions[];
   createShortResponseQuestion: any;
@@ -56,6 +57,7 @@ export default function QuestionForm({
   updateOptionText: any;
   createOption: any;
   deleteOption: any;
+  host: string;
 }) {
   const { id: formId, title } = form;
   const { toast } = useToast();
@@ -130,16 +132,18 @@ export default function QuestionForm({
             >
               Add Question
             </Button>
-            <Link href={`/forms/viewform/${formId}`} target="_blank">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-2 ml-8"
-              >
-                Preview
-              </Button>
-            </Link>
+            {form.published ? null : (
+              <Link href={`/forms/viewform/${formId}`} target="_blank">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 ml-8"
+                >
+                  Preview
+                </Button>
+              </Link>
+            )}
 
             <Button
               type="button"

@@ -14,10 +14,16 @@ import {
   createOptionQuestion,
 } from "@/lib/actions/questions/create";
 
+import { headers } from "next/headers";
+
 import { notFound } from "next/navigation";
 
 export default async function Page({ params }: { params: { slug: string } }) {
   const questions = await getQuestionsFromUser(params.slug);
+
+  const headersList = headers();
+
+  const host = headersList.get("host") || "";
 
   if ("error" in questions) {
     notFound();
@@ -42,6 +48,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           createOptionQuestion={createOptionQuestion}
           updateOptionText={updateOptionText}
           createOption={createOption}
+          host={host}
         />
       }
     </>
