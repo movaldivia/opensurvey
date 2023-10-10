@@ -118,6 +118,58 @@ export default function QuestionForm({
             formTitleDebounced={formTitleDebounced}
             formId={formId}
           />
+          <div className="mt-8 flex">
+            {form.published ? null : (
+              <Link href={`/forms/viewform/${formId}`} target="_blank">
+                <Button type="button" variant="outline" size="sm" className="">
+                  Go to Preview
+                </Button>
+              </Link>
+            )}
+
+            <Button
+              type="button"
+              size="sm"
+              className="ml-6"
+              onClick={async () => {
+                await tooglePublishFormFromUser(formId);
+              }}
+            >
+              {form.published ? `Unpublish` : "Publish"}
+            </Button>
+            {form.published ? (
+              <div>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="ml-8"
+                  onClick={() => {
+                    router.push(`/forms/viewform/${formId}`);
+                  }}
+                >
+                  Go to form
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="link"
+                  className="ml-2"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      `${host}/forms/viewform/${formId}`
+                    );
+
+                    toast({
+                      title: "Link successfully copied",
+                    });
+                  }}
+                >
+                  Copy link
+                </Button>
+              </div>
+            ) : null}
+          </div>
           <div className="mt-4">
             <Button
               type="button"
@@ -132,60 +184,6 @@ export default function QuestionForm({
             >
               Add Question
             </Button>
-            {form.published ? null : (
-              <Link href={`/forms/viewform/${formId}`} target="_blank">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-2 ml-8"
-                >
-                  Preview
-                </Button>
-              </Link>
-            )}
-
-            <Button
-              type="button"
-              size="sm"
-              className="mt-2 ml-2"
-              onClick={async () => {
-                await tooglePublishFormFromUser(formId);
-              }}
-            >
-              {form.published ? `Unpublish` : "Publish"}
-            </Button>
-            {form.published ? (
-              <div>
-                <Button
-                  type="button"
-                  size="sm"
-                  className="mt-8"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(
-                      `${host}/forms/viewform/${formId}`
-                    );
-
-                    toast({
-                      title: "Link successfully copied",
-                    });
-                  }}
-                >
-                  Copy Link
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  className="mt-8 ml-2"
-                  onClick={() => {
-                    router.push(`/forms/viewform/${formId}`);
-                  }}
-                >
-                  Go to form
-                </Button>
-              </div>
-            ) : null}
           </div>
 
           <div className="mt-12">
