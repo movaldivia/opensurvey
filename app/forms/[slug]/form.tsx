@@ -121,7 +121,12 @@ export default function QuestionForm({
           <div className="mt-8 flex">
             {form.published ? null : (
               <Link href={`/forms/viewform/${formId}`} target="_blank">
-                <Button type="button" variant="outline" size="sm" className="">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mr-6"
+                >
                   Go to Preview
                 </Button>
               </Link>
@@ -130,7 +135,7 @@ export default function QuestionForm({
             <Button
               type="button"
               size="sm"
-              className="ml-6"
+              className=""
               onClick={async () => {
                 await tooglePublishFormFromUser(formId);
               }}
