@@ -144,17 +144,16 @@ export default function QuestionForm({
             </Button>
             {form.published ? (
               <div>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  className="ml-8"
-                  onClick={() => {
-                    router.push(`/forms/viewform/${formId}`);
-                  }}
-                >
-                  Go to form
-                </Button>
+                <Link href={`/forms/viewform/${formId}`} target="_blank">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="ml-8"
+                  >
+                    Go to form
+                  </Button>
+                </Link>
                 <Button
                   type="button"
                   size="sm"
