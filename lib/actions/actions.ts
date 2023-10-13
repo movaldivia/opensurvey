@@ -7,97 +7,8 @@ import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 
 type AnswersWithQuestionOptionAndResponse = Prisma.AnswerGetPayload<{
-  include: { question: true; option: true; response: true };
+  include: { question: true; options: true; response: true };
 }>;
-
-export const deleteOption = async (
-  questionId: string,
-  optionId: string,
-  formId: string
-) => {
-  const session = await getSession();
-  if (!session?.user.id) {
-    return {
-      error: "Not authenticated",
-    };
-  }
-
-  await prisma.question.findFirstOrThrow({
-    where: {
-      userId: session.user.id,
-      id: questionId,
-      formId,
-    },
-  });
-
-  await prisma.option.delete({
-    where: {
-      id: optionId,
-      questionId,
-    },
-  });
-
-  revalidatePath(`forms/${formId}`);
-};
-
-export const createOption = async (
-  questionId: string,
-  formId: string,
-  order: number
-) => {
-  const session = await getSession();
-  if (!session?.user.id) {
-    return {
-      error: "Not authenticated",
-    };
-  }
-
-  const question = await prisma.question.findFirstOrThrow({
-    where: {
-      id: questionId,
-      userId: session.user.id,
-      formId,
-    },
-    include: {
-      options: {
-        orderBy: {
-          order: "asc",
-        },
-      },
-    },
-  });
-
-  const options = question.options;
-
-  const updateOptionsOrder = options
-    .filter((option) => {
-      if (option.order >= order) {
-        return true;
-      }
-      return false;
-    })
-    .map((option) => {
-      const newOrder = question.order + 1;
-      return prisma.option.update({
-        where: { id: option.id },
-        data: { order: newOrder },
-      });
-    });
-
-  const createOrder = prisma.option.create({
-    data: {
-      order,
-      optionText: `Option ${order}`,
-      questionId: questionId,
-    },
-  });
-
-  updateOptionsOrder.push(createOrder);
-
-  await prisma.$transaction(updateOptionsOrder);
-
-  revalidatePath(`forms/${formId}`);
-};
 
 export const updateOptionText = async (
   optionText: string,
@@ -134,8 +45,25 @@ export const updateOptionText = async (
   return;
 };
 
-function transform(obj: any) {
-  const result = [];
+// Define the shape of the input object's values
+interface InputValueType {
+  type: "SHORT_RESPONSE" | "SELECT_ONE_OPTION" | "SELECT_MULTIPLE_OPTIONS";
+  text: string | null;
+  optionId: string | null;
+  optionIds: string[] | null;
+}
+
+// Define the shape of the output object
+interface OutputType {
+  answerText: string | null;
+  questionId: string;
+  type: "SHORT_RESPONSE" | "SELECT_ONE_OPTION" | "SELECT_MULTIPLE_OPTIONS";
+  optionId: string | null;
+  optionIds: string[] | null;
+}
+
+function transform(obj: Record<string, InputValueType>): OutputType[] {
+  const result: OutputType[] = [];
 
   for (let key in obj) {
     if (obj[key].type === "SHORT_RESPONSE") {
@@ -144,13 +72,23 @@ function transform(obj: any) {
         questionId: key,
         type: "SHORT_RESPONSE",
         optionId: null,
+        optionIds: null,
       });
-    } else if (obj[key].type === "MANY_OPTIONS") {
+    } else if (obj[key].type === "SELECT_ONE_OPTION") {
       result.push({
         answerText: null,
         questionId: key,
-        optionId: obj[key].optionId,
-        type: "MANY_OPTIONS",
+        optionId: obj[key].optionId!,
+        type: "SELECT_ONE_OPTION",
+        optionIds: null,
+      });
+    } else if (obj[key].type === "SELECT_MULTIPLE_OPTIONS") {
+      result.push({
+        answerText: null,
+        optionId: null,
+        type: "SELECT_MULTIPLE_OPTIONS",
+        questionId: key,
+        optionIds: obj[key].optionIds!,
       });
     }
   }
@@ -189,19 +127,39 @@ export const submitForm = async (answersHash: any, formId: string) => {
     if (answer.type === "SHORT_RESPONSE") {
       return prisma.answer.create({
         data: {
-          answerText: answer.answerText,
+          answerText: answer.answerText!,
           questionId: answer.questionId,
           formId: form.id,
           responseId: response.id,
         },
       });
-    } else if (answer.type === "MANY_OPTIONS") {
+    } else if (answer.type === "SELECT_ONE_OPTION") {
       return prisma.answer.create({
         data: {
           questionId: answer.questionId,
           formId: form.id,
           responseId: response.id,
-          optionId: answer.optionId,
+          options: {
+            connect: {
+              id: answer.optionId!,
+            },
+          },
+          answerText: "",
+        },
+      });
+    } else if (answer.type === "SELECT_MULTIPLE_OPTIONS") {
+      const connectAnswers = answer.optionIds!.map((option: string) => {
+        return { id: option };
+      });
+
+      return prisma.answer.create({
+        data: {
+          questionId: answer.questionId,
+          formId: form.id,
+          responseId: response.id,
+          options: {
+            connect: [...connectAnswers],
+          },
           answerText: "",
         },
       });
@@ -275,12 +233,13 @@ export const getResponsesSummaryFromUser = async (formId: string) => {
       userId: session.user.id,
     },
     include: {
+      options: true,
       answers: {
         orderBy: {
           createdAt: "desc",
         },
         include: {
-          option: true,
+          options: true,
         },
       },
     },
@@ -308,7 +267,7 @@ export const getResponsesFromForm = async (formId: string) => {
     },
     include: {
       question: true,
-      option: true,
+      options: true,
       response: true,
     },
   });
@@ -355,9 +314,9 @@ export const getResponsesFromForm = async (formId: string) => {
       sortedAnswers.forEach((answer) => {
         const index = answer.question.order - 1;
         answersArray[index] =
-          answer.question.type === "MANY_OPTIONS"
-            ? answer.option
-              ? answer.option.optionText
+          answer.question.type === "SELECT_ONE_OPTION"
+            ? answer.options && answer.options.length === 1
+              ? answer.options[0].optionText
               : ""
             : answer.answerText;
       });

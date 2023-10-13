@@ -4,8 +4,9 @@ import { useDebouncedCallback } from "use-debounce";
 import { Plus, Trash2 } from "lucide-react";
 
 import { FormContainer } from "@/components/form-container";
+import { Checkbox } from "@/components/ui/checkbox";
 
-import { type Form, type Question, Prisma, type Option } from "@prisma/client";
+import { type Form, Prisma, type Option } from "@prisma/client";
 
 import { useRef, useEffect, useState } from "react";
 import { QuestionCommand } from "@/components/command";
@@ -47,6 +48,7 @@ export default function QuestionForm({
   createOption,
   deleteOption,
   host,
+  createMultipleOptionQuestion,
 }: {
   questions: QuestionWithOptions[];
   createShortResponseQuestion: any;
@@ -58,10 +60,10 @@ export default function QuestionForm({
   createOption: any;
   deleteOption: any;
   host: string;
+  createMultipleOptionQuestion: any;
 }) {
   const { id: formId, title } = form;
   const { toast } = useToast();
-  const router = useRouter();
 
   const questionTextAndPlaceholderDebounced = useDebouncedCallback(
     (questionId, placeholder, text) => {
@@ -95,6 +97,7 @@ export default function QuestionForm({
           createOptionQuestion={createOptionQuestion}
           deleteQuestion={deleteQuestion}
           commandQuestionId={commandQuestionId}
+          createMultipleOptionQuestion={createMultipleOptionQuestion}
         />
         <Link href={`/forms`}>
           <div className="flex items-center">
@@ -252,8 +255,7 @@ export default function QuestionForm({
                     </div>
                   </div>
                 );
-              }
-              if (question.type === "MANY_OPTIONS") {
+              } else if (question.type === "SELECT_ONE_OPTION") {
                 return (
                   <div key={question.id} className="mb-5 group relative">
                     <EditableQuestionText
@@ -264,6 +266,61 @@ export default function QuestionForm({
                       questionId={question.id}
                     />
                     <QuestionRadioGroup
+                      options={question.options}
+                      formId={formId}
+                      questionId={question.id}
+                      createOption={createOption}
+                      deleteOption={deleteOption}
+                    />
+                    <div className="absolute top-0 left-0 transform -translate-x-full flex md:hidden items-center">
+                      <div className="mt-2 mr-1 flex">
+                        <DotsVerticalIcon
+                          className="h-4 w-4"
+                          onClick={() => {
+                            setNewElementOrder(question.order + 1);
+                            setCommandQuestionId(question.id);
+                            setOpenQuestionCommand(true);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className=" absolute top-0 left-0 transform -translate-x-full  hidden md:group-hover:inline-flex">
+                      <div className="mr-4 items-center hidden md:flex">
+                        <div className="hover:cursor-pointer">
+                          <Plus
+                            size={24}
+                            className=" text-gray-700"
+                            onClick={async () => {
+                              setNewElementOrder(question.order + 1);
+                              setOpenQuestionCommand(true);
+                            }}
+                          />
+                        </div>
+                        <div className="pl-1 hover:cursor-pointer">
+                          <Trash2
+                            size={22}
+                            className=" mt-1 text-gray-700 "
+                            onClick={async () => {
+                              await deleteQuestion(formId, question.id);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              if (question.type === "SELECT_MULTIPLE_OPTIONS") {
+                return (
+                  <div key={question.id} className="mb-5 group relative">
+                    <EditableQuestionText
+                      value={question.text}
+                      questionTextAndPlaceholderDebounced={
+                        questionTextAndPlaceholderDebounced
+                      }
+                      questionId={question.id}
+                    />
+                    <QuestionCheckboxes
                       options={question.options}
                       formId={formId}
                       questionId={question.id}
@@ -414,5 +471,97 @@ const QuestionRadioGroup = ({
         />
       </div>
     </RadioGroup>
+  );
+};
+
+const QuestionCheckboxes = ({
+  options,
+  formId,
+  questionId,
+  createOption,
+  deleteOption,
+}: {
+  options: Option[];
+  formId: string;
+  questionId: string;
+  createOption: any;
+  deleteOption: any;
+}) => {
+  const [prevOptionsLength, setPrevOptionsLength] = useState(options.length);
+
+  const debounced = useDebouncedCallback(
+    // function
+    (optionText, optionId) => {
+      updateOptionText(optionText, optionId, questionId, formId);
+    },
+
+    500
+  );
+
+  const lastInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (options.length > prevOptionsLength) {
+      lastInputRef.current && lastInputRef.current.focus();
+    }
+    setPrevOptionsLength(options.length);
+  }, [options, prevOptionsLength]);
+
+  const debouncedCreateOption = useDebouncedCallback((order) => {
+    createOption(questionId, formId, order);
+  }, 500);
+
+  if (!options) {
+    return null;
+  }
+
+  return (
+    <div>
+      {options.map((option, index) => {
+        return (
+          <div
+            key={option.id}
+            className="flex items-center space-x-2 relative group"
+          >
+            <Checkbox />
+            <Input
+              ref={options.length === index + 1 ? lastInputRef : null}
+              defaultValue={option.optionText}
+              placeholder="Type the option"
+              className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0"
+              onChange={(e) => debounced(e.target.value, option.id)}
+            />
+            <div className=" absolute top-2 left-0 transform -translate-x-full  hidden group-hover:inline-flex">
+              <div className="mr-4">
+                <div className="md:px-2 hover:cursor-pointer">
+                  <Trash2
+                    size={20}
+                    className=" text-gray-700 "
+                    onClick={async () => {
+                      await deleteOption(questionId, option.id, formId);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      <div
+        onClick={() => {
+          createOption(questionId, formId, options.length + 1);
+        }}
+        key={"dsd"}
+        className="flex items-center space-x-2 "
+      >
+        <Checkbox value={"input"} id={"input"} />
+        <Input
+          defaultValue="Add other option"
+          placeholder="Type the option"
+          className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0 text-slate-400"
+          onChange={(e) => debouncedCreateOption(options.length + 1)}
+        />
+      </div>
+    </div>
   );
 };

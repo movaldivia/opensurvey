@@ -10,7 +10,7 @@ import { MoveLeft } from "lucide-react";
 
 import Link from "next/link";
 
-import { type Form, type Question, Prisma, type Option } from "@prisma/client";
+import { type Question, Prisma, type Option } from "@prisma/client";
 
 import {
   getResponsesSummaryFromUser,
@@ -18,6 +18,7 @@ import {
 } from "@/lib/actions/actions";
 
 import ResponsePie from "@/components/pie";
+import ResponseBarChart from "@/components/response-bar-chart";
 
 import { notFound } from "next/navigation";
 
@@ -25,9 +26,10 @@ import { ExportToExcelButton } from "./export-excel-button";
 
 type QuestionWithOptionsWithAnswer = Prisma.QuestionGetPayload<{
   include: {
+    options: true;
     answers: {
       include: {
-        option: true;
+        options: true;
       };
     };
   };
@@ -42,7 +44,6 @@ function transformData(optionsData: (Option | null)[]) {
   };
   const questionIdCount: QuestionIdCount = {};
 
-  // Count the occurrences of each questionId
   optionsData.forEach((item) => {
     if (item === null) {
       return;
@@ -54,7 +55,6 @@ function transformData(optionsData: (Option | null)[]) {
     }
   });
 
-  // Convert the object into the desired array format
   const result = Object.values(questionIdCount);
 
   return result;
@@ -84,9 +84,9 @@ function Question({ question }: { question: QuestionWithOptionsWithAnswer }) {
         </CardContent>
       </Card>
     );
-  } else if (question.type === "MANY_OPTIONS") {
+  } else if (question.type === "SELECT_ONE_OPTION") {
     const optionsData = question.answers.map((answer) => {
-      return answer.option;
+      return answer.options[0];
     });
 
     const options = transformData(optionsData);
@@ -100,6 +100,66 @@ function Question({ question }: { question: QuestionWithOptionsWithAnswer }) {
         <CardContent>
           <div className="space-y-8">
             <ResponsePie data={options} />
+            {question.answers.map((answer) => {
+              return (
+                <div key={answer.id} className="ml-4 space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    {answer.answerText}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  } else if (question.type === "SELECT_MULTIPLE_OPTIONS") {
+    const { options, answers } = question;
+
+    const optionsCounter: Record<
+      string,
+      { name: string; count: number; order: number }
+    > = {};
+
+    for (const option of options) {
+      optionsCounter[option.id] = {
+        name: option.optionText,
+        count: 0,
+        order: option.order,
+      };
+    }
+
+    for (const answer of answers) {
+      const optionsOfAnswer = answer.options;
+      for (const optionOfAnswer of optionsOfAnswer) {
+        const newCount = (optionsCounter[optionOfAnswer.id].count += 1);
+        optionsCounter[optionOfAnswer.id] = {
+          ...optionsCounter[optionOfAnswer.id],
+          count: newCount,
+        };
+      }
+    }
+
+    const barChartData = Object.entries(optionsCounter)
+      .sort((a, b) => {
+        return a[1].order - b[1].order;
+      })
+      .map(([_, value]) => {
+        return { name: value.name, count: value.count };
+      });
+
+    return (
+      <Card className="col-span-3 mt-8">
+        <CardHeader className="pb-2">
+          <CardTitle>{question.text}</CardTitle>
+          <CardDescription>{`${question.answers.length} responses`}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-8">
+            <div className="mt-12">
+              <ResponseBarChart data={barChartData} />
+            </div>
+
             {question.answers.map((answer) => {
               return (
                 <div key={answer.id} className="ml-4 space-y-1">

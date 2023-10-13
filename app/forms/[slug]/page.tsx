@@ -5,13 +5,15 @@ import {
   deleteQuestion,
   tooglePublishFormFromUser,
   updateOptionText,
-  createOption,
-  deleteOption,
 } from "@/lib/actions/actions";
+
+import { createOption } from "@/lib/actions/options/create";
+import { deleteOption } from "@/lib/actions/options/delete";
 
 import {
   createShortResponseQuestion,
   createOptionQuestion,
+  createMultipleOptionQuestion,
 } from "@/lib/actions/questions/create";
 
 import { headers } from "next/headers";
@@ -49,6 +51,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
           updateOptionText={updateOptionText}
           createOption={createOption}
           host={host}
+          createMultipleOptionQuestion={createMultipleOptionQuestion}
         />
       }
     </>

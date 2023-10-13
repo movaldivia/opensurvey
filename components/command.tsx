@@ -1,7 +1,11 @@
 "use client";
 
-import { CheckCircledIcon, PauseIcon } from "@radix-ui/react-icons";
-import { Plus, Trash2 } from "lucide-react";
+import {
+  CheckCircledIcon,
+  PauseIcon,
+  CheckboxIcon,
+} from "@radix-ui/react-icons";
+import { Trash2 } from "lucide-react";
 
 import {
   CommandEmpty,
@@ -21,6 +25,7 @@ export function QuestionCommand({
   createOptionQuestion,
   deleteQuestion,
   commandQuestionId,
+  createMultipleOptionQuestion,
 }: {
   open: boolean;
   setOpen: any;
@@ -30,6 +35,7 @@ export function QuestionCommand({
   createOptionQuestion: any;
   deleteQuestion: any;
   commandQuestionId: string;
+  createMultipleOptionQuestion: any;
 }) {
   return (
     <div>
@@ -56,7 +62,20 @@ export function QuestionCommand({
               }}
             >
               <CheckCircledIcon className="mr-2 h-4 w-4" />
-              <span>Add multiple options question</span>
+              <span>Add multiple choice question</span>
+            </CommandItem>
+            <CommandItem
+              className="cursor-pointer"
+              onSelect={async () => {
+                await createMultipleOptionQuestion({
+                  formId,
+                  questionOrder: newElementOrder,
+                });
+                setOpen(false);
+              }}
+            >
+              <CheckboxIcon className="mr-2 h-4 w-4" />
+              <span>Add checkboxes question</span>
             </CommandItem>
             {commandQuestionId ? (
               <CommandItem

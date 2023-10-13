@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { type Form, Prisma, type Option } from "@prisma/client";
 
@@ -17,16 +18,28 @@ type ShortResponseAnswer = {
   type: "SHORT_RESPONSE";
   optionId: null;
   text: string;
+  optionIds: null;
 };
 
-type ManyOptionsAnswer = {
-  type: "MANY_OPTIONS";
+type OneOptionAnswer = {
+  type: "SELECT_ONE_OPTION";
   optionId: string;
+  text: string;
+  optionIds: null;
+};
+
+type SelectMultipleOptionsAnwer = {
+  type: "SELECT_MULTIPLE_OPTIONS";
+  optionIds: string[];
+  optionId: null;
   text: string;
 };
 
 type Accumulator = {
-  [key: string]: ShortResponseAnswer | ManyOptionsAnswer;
+  [key: string]:
+    | ShortResponseAnswer
+    | OneOptionAnswer
+    | SelectMultipleOptionsAnwer;
 };
 
 type SetAnswers = React.Dispatch<React.SetStateAction<Accumulator>>;
@@ -48,12 +61,21 @@ export default function Form({
           type: "SHORT_RESPONSE",
           optionId: null,
           text: "",
+          optionIds: null,
         };
-      } else if (question.type === "MANY_OPTIONS") {
+      } else if (question.type === "SELECT_ONE_OPTION") {
         acc[question.id] = {
-          type: "MANY_OPTIONS",
+          type: "SELECT_ONE_OPTION",
           optionId: "",
           text: "",
+          optionIds: null,
+        };
+      } else if (question.type === "SELECT_MULTIPLE_OPTIONS") {
+        acc[question.id] = {
+          type: "SELECT_MULTIPLE_OPTIONS",
+          optionId: null,
+          text: "",
+          optionIds: [],
         };
       }
       return acc;
@@ -81,6 +103,7 @@ export default function Form({
                         text: newValue,
                         type: "SHORT_RESPONSE",
                         optionId: null,
+                        optionIds: null,
                       },
                     }));
                   }}
@@ -90,13 +113,26 @@ export default function Form({
                 />
               </div>
             );
-          } else if ("MANY_OPTIONS") {
+          } else if (question.type === "SELECT_ONE_OPTION") {
             return (
               <div key={question.id} className="mb-5">
                 <div className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-wide text-lg transition-colors leading-7 [&:not(:first-child)]:mt-0  mb-2 font-medium  peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                   {question.text}
                 </div>
                 <QuestionRadioGroup
+                  setAnswers={setAnswers}
+                  options={question.options}
+                  questionId={question.id}
+                />
+              </div>
+            );
+          } else if (question.type === "SELECT_MULTIPLE_OPTIONS") {
+            return (
+              <div key={question.id} className="mb-5">
+                <div className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-wide text-lg transition-colors leading-7 [&:not(:first-child)]:mt-0  mb-2 font-medium  peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  {question.text}
+                </div>
+                <QuestionChexbox
                   setAnswers={setAnswers}
                   options={question.options}
                   questionId={question.id}
@@ -140,7 +176,8 @@ const QuestionRadioGroup = ({
           [questionId]: {
             text: "",
             optionId: newValue,
-            type: "MANY_OPTIONS",
+            type: "SELECT_ONE_OPTION",
+            optionIds: null,
           },
         }));
       }}
@@ -161,5 +198,54 @@ const QuestionRadioGroup = ({
         );
       })}
     </RadioGroup>
+  );
+};
+
+const QuestionChexbox = ({
+  options,
+  setAnswers,
+  questionId,
+}: {
+  options: Option[];
+  setAnswers: SetAnswers;
+  questionId: string;
+}) => {
+  return (
+    <div>
+      {options.map((option) => {
+        return (
+          <div
+            key={option.id}
+            className="flex items-center space-x-2 relative group"
+          >
+            <Checkbox
+              value={option.id}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  setAnswers((prevAnswers) => {
+                    const existingOptionIds =
+                      prevAnswers[questionId]?.optionIds || [];
+                    return {
+                      ...prevAnswers,
+                      [questionId]: {
+                        text: "",
+                        optionId: null,
+                        type: "SELECT_MULTIPLE_OPTIONS",
+                        optionIds: [...existingOptionIds, option.id],
+                      },
+                    };
+                  });
+                }
+              }}
+            />
+            <Input
+              defaultValue={option.optionText}
+              placeholder="Type the option"
+              className="sm:w-1/2 border-0 shadow-none focus-visible:ring-0 pl-0 !mt-0 !pt-0 scroll-m-20 tracking-tight transition-colors leading-7 [&:not(:first-child)]:mt-0"
+            />
+          </div>
+        );
+      })}
+    </div>
   );
 };
