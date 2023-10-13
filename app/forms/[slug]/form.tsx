@@ -11,7 +11,12 @@ import { type Form, Prisma, type Option } from "@prisma/client";
 import { useRef, useEffect, useState } from "react";
 import { QuestionCommand } from "@/components/command";
 
-import { DotsVerticalIcon } from "@radix-ui/react-icons";
+import {
+  DotsVerticalIcon,
+  Share1Icon,
+  EyeOpenIcon,
+  CopyIcon,
+} from "@radix-ui/react-icons";
 
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -87,32 +92,80 @@ export default function QuestionForm({
 
   return (
     <div className="">
-      <div className="my-10">
-        <QuestionCommand
-          setOpen={setOpenQuestionCommand}
-          open={openQuestionCommand}
-          newElementOrder={newElementOrder}
-          formId={formId}
-          createShortResponseQuestion={createShortResponseQuestion}
-          createOptionQuestion={createOptionQuestion}
-          deleteQuestion={deleteQuestion}
-          commandQuestionId={commandQuestionId}
-          createMultipleOptionQuestion={createMultipleOptionQuestion}
-        />
-        <Link href={`/forms`}>
-          <div className="flex items-center">
-            {
-              <MoveLeft
-                className="mr-2"
-                color="#000000"
-                strokeWidth={1.75}
-                absoluteStrokeWidth
-                size={18}
-              />
-            }
-            {"Back to my forms"}
+      <div className="my-6 block md:flex justify-between items-center">
+        <div>
+          <QuestionCommand
+            setOpen={setOpenQuestionCommand}
+            open={openQuestionCommand}
+            newElementOrder={newElementOrder}
+            formId={formId}
+            createShortResponseQuestion={createShortResponseQuestion}
+            createOptionQuestion={createOptionQuestion}
+            deleteQuestion={deleteQuestion}
+            commandQuestionId={commandQuestionId}
+            createMultipleOptionQuestion={createMultipleOptionQuestion}
+          />
+          <Link href={`/forms`}>
+            <div className="flex items-center">
+              {
+                <MoveLeft
+                  className="mr-2"
+                  color="#000000"
+                  strokeWidth={1.75}
+                  absoluteStrokeWidth
+                  size={18}
+                />
+              }
+              {"Back to my forms"}
+            </div>
+          </Link>
+        </div>
+        <div className="flex mt-8 md:mt-0">
+          <Link
+            className="cursor-pointer"
+            href={`/forms/viewform/${formId}`}
+            target="_blank"
+          >
+            <div className="flex items-center px-1  hover:bg-slate-100 rounded-md">
+              <EyeOpenIcon className="h-4 w-4 px-0 mx-0 ml-2" />
+              <Button className="-ml-2 hover:no-underline" variant={"link"}>
+                Preview
+              </Button>
+            </div>
+          </Link>
+          <div
+            tabIndex={0}
+            onClick={async () => {
+              await tooglePublishFormFromUser(formId);
+            }}
+            className="flex items-center px-1 cursor-pointer hover:bg-slate-100 rounded-md ml-2"
+          >
+            <Share1Icon className="h-4 w-4 px-0 mx-0 ml-2" />
+            <Button className="-ml-2 hover:no-underline" variant={"link"}>
+              {form.published ? "Unpublish" : "Publish"}
+            </Button>
           </div>
-        </Link>
+          {form.published ? (
+            <div
+              tabIndex={0}
+              onClick={async () => {
+                await navigator.clipboard.writeText(
+                  `${host}/forms/viewform/${formId}`
+                );
+
+                toast({
+                  title: "Link successfully copied",
+                });
+              }}
+              className="flex items-center px-1 cursor-pointer hover:bg-slate-100 rounded-md ml-2"
+            >
+              <CopyIcon className="h-4 w-4 px-0 mx-0 ml-2" />
+              <Button className="-ml-2 hover:no-underline" variant={"link"}>
+                Copy Link
+              </Button>
+            </div>
+          ) : null}
+        </div>
       </div>
       <FormContainer>
         <div className="">
@@ -121,63 +174,7 @@ export default function QuestionForm({
             formTitleDebounced={formTitleDebounced}
             formId={formId}
           />
-          <div className="mt-8 flex">
-            {form.published ? null : (
-              <Link href={`/forms/viewform/${formId}`} target="_blank">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mr-6"
-                >
-                  Go to Preview
-                </Button>
-              </Link>
-            )}
-
-            <Button
-              type="button"
-              size="sm"
-              className=""
-              onClick={async () => {
-                await tooglePublishFormFromUser(formId);
-              }}
-            >
-              {form.published ? `Unpublish` : "Publish"}
-            </Button>
-            {form.published ? (
-              <div>
-                <Link href={`/forms/viewform/${formId}`} target="_blank">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="ml-8"
-                  >
-                    Go to form
-                  </Button>
-                </Link>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="link"
-                  className="ml-2"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(
-                      `${host}/forms/viewform/${formId}`
-                    );
-
-                    toast({
-                      title: "Link successfully copied",
-                    });
-                  }}
-                >
-                  Copy link
-                </Button>
-              </div>
-            ) : null}
-          </div>
-          <div className="mt-4">
+          <div className="mt-8">
             <Button
               type="button"
               variant="outline"
