@@ -12,7 +12,7 @@ export function MainNav({ isUserLogged }: { isUserLogged: boolean }) {
   return (
     <div className="mr-4 hidden md:block">
       <div className="border-b">
-        <div className="flex h-16 items-center px-32">
+        <div className="flex h-16 items-center px-48">
           <div className="flex items-baseline cursor-pointer px-1">
             <h4 className="font-semibold tracking-tight cursor-pointer ml-1">
               Opensurvey

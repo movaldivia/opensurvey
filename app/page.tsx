@@ -12,51 +12,51 @@ export default async function Home() {
   return (
     <div>
       <SiteHeader isUserLogged={isUserLogged} />
-      <section className="px-4 mt-10 md:mt-20 md:px-32 flex">
-        <div>
-          <div className="">
+      <section className="px-4 mt-10 md:mt-20 md:px-32">
+        <div className="">
+          <div className="flex justify-center">
             <div>
-              <Link href={"https://github.com/movaldivia/opensurvey"}>
-                <Badge className="py-1 px-2 cursor-pointer" variant="secondary">
-                  <div className="text-sm font-normal flex items-center">
-                    <div>🎉</div>
-                    <div className="text-slate-300 px-2">|</div>
-                    <div>We are in Open Beta.</div>
-                    <div>
-                      <ArrowRightIcon className="h-4 w-4 ml-2" />
-                    </div>
-                  </div>
-                </Badge>
-              </Link>
+              <h1 className="mt-2 text-4xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1] text-center">
+                The open source alternative
+              </h1>
+              <h1 className="md:mt-2 text-4xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1] text-center">
+                To Google Forms.
+              </h1>
             </div>
-            <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
-              The open source alternative
-            </h1>
-            <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tighter md:text-5xl lg:leading-[1.1]">
-              To Google Forms.
-            </h1>
           </div>
-          <div className="mt-4">
-            <div className="max-w-[600px] font-light text-xl text-muted-foreground sm:text-xl">
+          <div className="mt-6 flex justify-center">
+            <div className="max-w-[600px] font-light text-xl text-muted-foreground sm:text-xl text-center">
               Simple form builder. Publish your form in less than 5 minutes.
               Accessible. Customizable. Open Source.
             </div>
           </div>
-          <div className="mt-4 flex w-full items-center space-x-4 pb-8 pt-4 md:pb-10">
-            {isUserLogged ? (
-              <Link href={"/forms"}>
-                <Button>Create form</Button>
+          <div className="mt-8">
+            <div className="flex justify-center space-x-3">
+              {isUserLogged ? (
+                <Link href={"/forms"}>
+                  <Button>Create form</Button>
+                </Link>
+              ) : (
+                <RegisterDialog></RegisterDialog>
+              )}
+              <Link href={"https://github.com/movaldivia/opensurvey"}>
+                <Button variant="outline">
+                  <GitHubLogoIcon className="h-4 w-4" />
+                  <span className="ml-2">GitHub</span>
+                </Button>
               </Link>
-            ) : (
-              <RegisterDialog></RegisterDialog>
-            )}
-            <Link href={"https://github.com/movaldivia/opensurvey"}>
-              <Button variant="outline">
-                <GitHubLogoIcon className="h-4 w-4" />
-                <span className="ml-2">GitHub</span>
-              </Button>
-            </Link>
+            </div>
           </div>
+        </div>
+      </section>
+      <section className="mt-14 mb-8">
+        <div className="flex justify-center">
+          <Image
+            alt="hero image form"
+            height={1000}
+            width={1000}
+            src={"/heroimage.png"}
+          />
         </div>
       </section>
     </div>
