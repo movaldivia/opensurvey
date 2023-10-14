@@ -63,11 +63,12 @@ export default async function Home() {
         <div className="md:px-48">
           <div>
             <h3 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-              It's time to move on from Google Forms.
+              It&apos;s time to move on from Google Forms.
             </h3>
             <p className="leading-8 text-lg [&:not(:first-child)]:mt-6 text-slate-500 font-normal">
-              Google Forms has been widely used for many years. We believe it's
-              time for an alternative, which is why we created Opensurvey.
+              Google Forms has been widely used for many years. We believe
+              it&apos;s time for an alternative, which is why we created
+              Opensurvey.
             </p>
           </div>
           <div className="mt-12">
@@ -76,7 +77,7 @@ export default async function Home() {
             </h3>
             <p className="leading-8 text-lg [&:not(:first-child)]:mt-6 text-slate-500 font-normal">
               They can make any claim or promise, but without access to the
-              codebase, how can we truly verify? That's why we launched
+              codebase, how can we truly verify? That&apos;s why we launched
               OpenSurvey as an open-source alternative.
             </p>
           </div>
@@ -85,11 +86,11 @@ export default async function Home() {
               Tired of Google Forms?
             </h3>
             <p className="leading-8 text-lg [&:not(:first-child)]:mt-6 text-slate-500 font-normal">
-              You're not alone! Approximately 80% of the forms I've filled out
-              have been Google Forms. That's why we decided to create an
-              open-source alternative with fresh designs for both us and our
-              users. We're committed to regularly adding new features,
-              prioritizing the ones most requested by our community.
+              You&apos;re not alone! Approximately 80% of the forms I&apos;ve
+              filled out have been Google Forms. That&apos;s why we decided to
+              create an open-source alternative with fresh designs for both us
+              and our users. We&apos;re committed to regularly adding new
+              features, prioritizing the ones most requested by our community.
             </p>
           </div>
           <div className="mt-12">
@@ -105,13 +106,13 @@ export default async function Home() {
           </div>
           <div className="mt-12">
             <h3 className="scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight transition-colors first:mt-0">
-              Don't have money?
+              Don&apos;t have money?
             </h3>
             <p className="leading-8 text-lg [&:not(:first-child)]:mt-6 text-slate-500 font-normal">
               One of the most compelling reasons people use Google Forms is
-              because it's free. With OpenSurvey, you can host it on your own
-              using Vercel (Next.js) and Supabase (PostgreSQL) for free, just
-              like we did.
+              because it&apos;s free. With OpenSurvey, you can host it on your
+              own using Vercel (Next.js) and Supabase (PostgreSQL) for free,
+              just like we did.
             </p>
           </div>
           <div className="mt-12">
@@ -129,7 +130,7 @@ export default async function Home() {
             </p>
             <p className="leading-4 text-lg [&:not(:first-child)]:mt-6 text-slate-500 font-normal">
               4. Support for short answer, multiple-choice, and single-choice
-              questions."
+              questions.
             </p>
           </div>
         </div>
