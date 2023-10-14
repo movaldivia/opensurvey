@@ -5,6 +5,8 @@ import Link, { LinkProps } from "next/link";
 import { useRouter } from "next/navigation";
 import { ViewVerticalIcon } from "@radix-ui/react-icons";
 
+import Image from "next/image";
+
 import { docsConfig } from "@/config/docs";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
@@ -38,7 +40,10 @@ export function MobileNav({ isUserLogged }: { isUserLogged: boolean }) {
               className="flex items-center"
               onOpenChange={setOpen}
             >
-              <span className="font-bold ml-6">{siteConfig.name}</span>
+              <div className="flex items-center ml-6">
+                <Image width={30} height={30} alt="logo" src={"/logo.png"} />
+                <span className="font-bold ml-1">{siteConfig.name}</span>
+              </div>
             </MobileLink>
             <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
               <div className="flex flex-col space-y-3">

@@ -7,16 +7,21 @@ import { RegisterLink } from "@/components/registerLink";
 import { LoginLink } from "@/components/loginLink";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export function MainNav({ isUserLogged }: { isUserLogged: boolean }) {
   return (
     <div className="mr-4 hidden md:block">
       <div className="border-b">
         <div className="flex h-16 items-center px-48">
-          <div className="flex items-baseline cursor-pointer px-1">
-            <h4 className="font-semibold tracking-tight cursor-pointer ml-1">
-              Opensurvey
-            </h4>
+          <div className="flex items-center cursor-pointer px-1">
+            <div className="cursor-pointer flex items-center">
+              <Image width={30} height={30} alt="logo" src={"/logo.png"} />
+              <h4 className="font-semibold tracking-tight cursor-pointer ml-1">
+                Opensurvey
+              </h4>
+            </div>
+
             <div className="ml-8 text-sm font-medium transition-colors hover:text-foreground/80 text-foreground/60 cursor-pointer">
               <Link href={"https://github.com/movaldivia/opensurvey"}>
                 Documentation
